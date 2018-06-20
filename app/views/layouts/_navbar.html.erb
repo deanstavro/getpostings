@@ -1,6 +1,6 @@
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top" style="margin-bottom:0px;">
-  <a class="navbar-brand" href="/">ScaleRep</a>
+  <a class="navbar-brand" href="/">GetPostings</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
@@ -8,19 +8,9 @@
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav ml-auto nav-fill w-50">
       <% if user_signed_in? %>
-        <li class="nav-item active"> <%= link_to 'Personas', client_companies_personas_path() %></li>
-
-        <% if false %>
-        <li class="nav-item active"> <%= link_to 'Campaigns', client_company_campaigns_path(@user.client_company) %></li>
-        <% end %>
 
         <li class="nav-item active"> <%= link_to 'Leads', leads_path %></li>
 
-        <% if false %>
-          <li class="nav-item active"> <%= link_to 'Reports', client_reports_index_path %></li>
-
-          <li class="nav-item active"> <%= link_to 'Metrics', metrics_index_path %></li>
-        <% end %>
         <li class="nav-item active"> <%= link_to 'Edit User', edit_user_registration_path %></li>
         <li class="nav-item active"> <%= link_to 'Edit Account', edit_client_companies_path()%> </li>
         <li class="nav-item active"> <%= link_to 'Sign out', destroy_user_session_path, :method=>'delete' %></li>

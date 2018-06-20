@@ -1,10 +1,6 @@
 class ClientCompany < ApplicationRecord
 	has_many :users
 	has_many :leads
-	has_many :client_reports
-	has_many :campaigns
-	has_many :personas
-	has_many :campaign_replies
 	has_many :accounts
 
 
@@ -17,7 +13,6 @@ class ClientCompany < ApplicationRecord
 
 	after_create :generate_key
 
-	attr_accessor :campaign_id
 
 	def generate_key
     begin

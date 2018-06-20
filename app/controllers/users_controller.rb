@@ -14,7 +14,7 @@ class UsersController < ApplicationController
       @user = find_user
       @client_company = find_company
 
-      redirect_to client_companies_personas_path
+      redirect_to leads_path
 
       # Direct to personas if account is live
       #if account_live

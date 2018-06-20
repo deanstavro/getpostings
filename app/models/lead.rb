@@ -4,10 +4,7 @@ class Lead < ApplicationRecord
 
 	belongs_to :client_company, optional: true
 	belongs_to :account, optional: true
-	has_many :campaign_replies
-	#validates :client_company, presence: true
 
-	belongs_to :campaign, optional: true
 	enum status: [:cold, :in_campaign, :not_interested, :blacklist, :interested, :meeting_set]
 	#validates :email, presence: true
 	

@@ -20,12 +20,6 @@ Rails.application.routes.draw do
                 end
             end
 
-            resources :reply do
-                collection do
-                    post :new_reply
-                end
-            end
-
         end
     end
 
@@ -45,16 +39,13 @@ Rails.application.routes.draw do
 
 
 
-    #ALL ROUTES FOR USERS SIGNED IN
-    get 'client_reports/index'
-    get 'metrics/index'
+
     
     resources :users
 
     # Nested In Client Companies
     resource :client_companies, path: '', only: [:edit, :update, :delete] do  
-        resources :personas
-        resources :campaigns
+
     end
 
     resources :leads do

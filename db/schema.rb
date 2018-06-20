@@ -72,59 +72,6 @@ ActiveRecord::Schema.define(version: 20180613003200) do
     t.index ["reset_password_token"], name: "index_admin_users_on_reset_password_token", unique: true, using: :btree
   end
 
-  create_table "campaign_replies", force: :cascade do |t|
-    t.string   "first_name"
-    t.string   "last_name"
-    t.string   "full_name"
-    t.string   "last_conversation_subject"
-    t.string   "last_conversation_summary"
-    t.integer  "status"
-    t.string   "company"
-    t.string   "email"
-    t.text     "notes"
-    t.string   "reply_io_id"
-    t.string   "reply_io_key"
-    t.date     "follow_up_date"
-    t.datetime "created_at",                null: false
-    t.datetime "updated_at",                null: false
-    t.integer  "client_company_id"
-    t.integer  "lead_id"
-    t.index ["client_company_id"], name: "index_campaign_replies_on_client_company_id", using: :btree
-    t.index ["lead_id"], name: "index_campaign_replies_on_lead_id", using: :btree
-  end
-
-  create_table "campaigns", force: :cascade do |t|
-    t.string   "industry"
-    t.datetime "campaign_start"
-    t.datetime "campaign_end"
-    t.datetime "created_at",                              null: false
-    t.datetime "updated_at",                              null: false
-    t.integer  "client_company_id"
-    t.string   "user_notes"
-    t.string   "reply_id"
-    t.string   "reply_key"
-    t.boolean  "personalized",            default: false
-    t.integer  "persona_id"
-    t.string   "campaign_name"
-    t.string   "last_poll_from_reply"
-    t.string   "emailAccount"
-    t.integer  "deliveriesCount"
-    t.integer  "opensCount"
-    t.integer  "repliesCount"
-    t.integer  "bouncesCount"
-    t.integer  "optOutsCount"
-    t.integer  "outOfOfficeCount"
-    t.integer  "peopleCount"
-    t.integer  "peopleFinished"
-    t.integer  "peopleActive"
-    t.integer  "peoplePaused"
-    t.integer  "minimum_email_score"
-    t.boolean  "has_minimum_email_score"
-    t.integer  "campaign_type"
-    t.index ["client_company_id"], name: "index_campaigns_on_client_company_id", using: :btree
-    t.index ["persona_id"], name: "index_campaigns_on_persona_id", using: :btree
-  end
-
   create_table "client_companies", force: :cascade do |t|
     t.string   "name"
     t.text     "description"
@@ -144,16 +91,6 @@ ActiveRecord::Schema.define(version: 20180613003200) do
     t.string   "account_manager"
   end
 
-  create_table "client_reports", force: :cascade do |t|
-    t.datetime "week_of"
-    t.text     "report"
-    t.string   "potential_deal_sizes"
-    t.datetime "created_at",           null: false
-    t.datetime "updated_at",           null: false
-    t.integer  "client_company_id"
-    t.index ["client_company_id"], name: "index_client_reports_on_client_company_id", using: :btree
-  end
-
   create_table "demos", force: :cascade do |t|
     t.string   "name"
     t.string   "email"
@@ -171,7 +108,6 @@ ActiveRecord::Schema.define(version: 20180613003200) do
     t.datetime "created_at",                            null: false
     t.datetime "updated_at",                            null: false
     t.integer  "client_company_id"
-    t.integer  "campaign_id"
     t.string   "contract_sent"
     t.integer  "contract_amount"
     t.string   "timeline"
@@ -199,18 +135,7 @@ ActiveRecord::Schema.define(version: 20180613003200) do
     t.string   "company_website"
     t.integer  "account_id"
     t.index ["account_id"], name: "index_leads_on_account_id", using: :btree
-    t.index ["campaign_id"], name: "index_leads_on_campaign_id", using: :btree
     t.index ["client_company_id"], name: "index_leads_on_client_company_id", using: :btree
-  end
-
-  create_table "personas", force: :cascade do |t|
-    t.string   "name"
-    t.datetime "created_at",           null: false
-    t.datetime "updated_at",           null: false
-    t.integer  "client_company_id"
-    t.string   "description"
-    t.string   "special_instructions"
-    t.index ["client_company_id"], name: "index_personas_on_client_company_id", using: :btree
   end
 
   create_table "users", force: :cascade do |t|
@@ -237,14 +162,7 @@ ActiveRecord::Schema.define(version: 20180613003200) do
   end
 
   add_foreign_key "accounts", "client_companies"
-  add_foreign_key "campaign_replies", "client_companies"
-  add_foreign_key "campaign_replies", "leads"
-  add_foreign_key "campaigns", "client_companies"
-  add_foreign_key "campaigns", "personas"
-  add_foreign_key "client_reports", "client_companies"
   add_foreign_key "leads", "accounts"
-  add_foreign_key "leads", "campaigns"
   add_foreign_key "leads", "client_companies"
-  add_foreign_key "personas", "client_companies"
   add_foreign_key "users", "client_companies"
 end
