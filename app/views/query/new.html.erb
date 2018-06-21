@@ -1,0 +1,19 @@
+<div class="authform">
+  <h3>Execute Job</h3>
+  <%= form_for @query, :url => {:action => "create"}, html: { method: :post } do |f| %>
+
+    
+    <div class="form-group">
+      <%= f.label :source %><br>
+      <%= f.select(:source, [['yelp', 'yelp'], ['yellow pages', 'yellow_pages'], ['indeed', 'indeed']], :autofocus => true, class: 'form-control') %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :url%>
+      <%= f.text_field :url, :autofocus => true, class: 'form-control' %>
+    </div>
+
+
+    <%= f.submit 'Execute', :class => 'button' %>
+  <% end %>
+</div>

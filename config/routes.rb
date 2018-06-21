@@ -25,9 +25,11 @@ Rails.application.routes.draw do
 
     # Set Root Url
     authenticated :user do
-        root 'users#home'
+        root 'query#index'
     end 
     root to: 'homepage#index'
+
+
 
 
     # ALL ROUTES FOR USERS NOT SIGNED IN
@@ -42,9 +44,11 @@ Rails.application.routes.draw do
 
     
     resources :users
+    resources :query
 
     # Nested In Client Companies
-    resource :client_companies, path: '', only: [:edit, :update, :delete] do  
+    resource :client_companies, path: '', only: [:edit, :update, :delete] do 
+
 
     end
 

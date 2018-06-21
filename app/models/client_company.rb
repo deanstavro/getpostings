@@ -2,6 +2,7 @@ class ClientCompany < ApplicationRecord
 	has_many :users
 	has_many :leads
 	has_many :accounts
+	has_many :queries
 
 
 	validates :name, presence: true
