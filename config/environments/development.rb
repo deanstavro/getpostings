@@ -26,6 +26,15 @@ Rails.application.configure do
     config.cache_store = :null_store
   end
 
+
+
+  ENV["ACCESS_KEY_ID"] = "AKIAIKAB4OZIQJGEVBWQ"
+  ENV["SECRET_ACCESS_KEY"] = "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"
+  ENV['AWS_REGION'] = "us-west-2"
+  ENV["AWS_BUCKET"] = "getpostings"
+  ENV["AWS_KEY"] = "development/"
+
+
   # Don't care if the mailer can't send.
   config.action_mailer.raise_delivery_errors = false
 

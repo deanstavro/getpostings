@@ -75,8 +75,15 @@ class PullIndeedJob < ApplicationJob
           csv << [bridge]
         end
 
-        #uploader = ScrapeUploader.new
-        #uploader.store!(csv)
+
+        # Get AWS credentials and connect to s3
+        s3 = Aws::S3::Resource.new(credentials: Aws::Credentials.new('AKIAIKAB4OZIQJGEVBWQ', '3D8imYtcKi4IJ+syfFb1hiPd8u5YE2JyIkDNiOEY'),region: 'us-west-2')
+        path_to_file = "file.csv"
+        #create object with bucket choose bucket
+        obj = s3.bucket('getpostings').object("file.csv")
+        obj.upload_file(csv, acl:'public-read')
+        File.delete(path_to_file) if File.exist?(path_to_file)
+
     end
 
     
