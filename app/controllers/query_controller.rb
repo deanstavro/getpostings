@@ -22,9 +22,12 @@ class QueryController < ApplicationController
     	@query.client_company = @company
 
     	if  @query.save
+    		PullIndeedJob.perform_later(@query, @user, @company)
 			redirect_to root_path, :notice => "Your job is executing!"
+			return
 		else
 			redirect_to root_path, :notice => "Could not execute job!"
+			return
 		end
 
 	end

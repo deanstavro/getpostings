@@ -1,25 +1,30 @@
+<center>
+  <p class="container text-danger"><%= flash[:error] %></p>
+  <p class="container text-success"><%= flash[:notice] %></p>
+</center>
+
+
 <div id="title" class="jumbotron">
   <br/>
   <h1>Your Automated Jobs</h1>
+  <br>
+  <%= link_to '+ Execute Job', new_query_path, :class=>"add_campaign btn btn-primary btn-xl page-scroll" %>
 </div>
 
-<%= link_to '+ Execute Job', new_query_path, :class=>"add_campaign btn btn-primary btn-xl page-scroll" %>
-
-
-<div class="table-display">
+<div class="table-display table-padding">
 
   <table class="table table-hover"> 
     <thead class="thead-dark">
-      <tr>
+      <tr class="text-center">
         <th scope="col">Source</th>
         <th scope="col">URL</th>
         <th scope="col">CSV File</th>
     </thead>
     
-    <tbody>
+    <tbody class="text-center">
       <% @queries.each do |query| %>
         <tr>
-          <td>hi</td>
+          <td><%=query.source %></td>
           <td><%= query.url %></td>
           <td><%= query.file_download %></td>
         </tr>

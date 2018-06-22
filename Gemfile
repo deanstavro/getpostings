@@ -26,6 +26,7 @@ gem 'rest-client'
 gem 'sidekiq'
 gem 'rails_12factor'
 gem 'will_paginate', '~> 3.1.0'
+gem 'nokogiri', '1.8.2'
 
 group :test do
   gem 'sqlite3'
