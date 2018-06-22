@@ -68,23 +68,37 @@ class PullIndeedJob < ApplicationJob
       sleep 5
     end
 
-    CSV.open("file.csv", "wb") do |csv|
-        csv << ["Company"]
 
-        bridges.each do |bridge|
-          csv << [bridge]
-        end
+    Spreadsheet.client_encoding = 'UTF-8'
+    book = Spreadsheet::Workbook.new
+    sheet1 = book.create_worksheet(:name => 'Campaign')
+    sheet2 = book.create_worksheet(:name => 'Contacts')
 
+    sheet1.row(0).concat ["Company"]
 
-        # Get AWS credentials and connect to s3
-        s3 = Aws::S3::Resource.new(credentials: Aws::Credentials.new('AKIAIKAB4OZIQJGEVBWQ', '3D8imYtcKi4IJ+syfFb1hiPd8u5YE2JyIkDNiOEY'),region: 'us-west-2')
-        path_to_file = "file.csv"
-        #create object with bucket choose bucket
-        obj = s3.bucket('getpostings').object("file.csv")
-        obj.upload_file(csv, acl:'public-read')
-        File.delete(path_to_file) if File.exist?(path_to_file)
+    row_number = 1
 
+    bridges.each do |bridge|
+      sheet1.row(row_number).concat([bridge])
+      row_number = row_number+1
     end
+
+
+    directory_name = "tmp/csv"
+    Dir.mkdir(directory_name) unless File.exists?(directory_name)
+    
+    path_to_file = File.join(Rails.root, 'tmp/csv', "data.xls")
+    book.write path_to_file
+    
+    s3 = Aws::S3::Resource.new(credentials: Aws::Credentials.new('AKIAI3YSAR6H2RJ4YJMA', 'aB11Vdv5nWKXVuG7cJYMdfVypjTOj1f//xtwbsff'), region: 'us-west-2')
+
+    obj = s3.bucket('getpostings').object("development/data.xls")
+    obj.upload_file(path_to_file, acl:'public-read')
+
+    # Delete the file after is has been uploaded
+    File.delete(path_to_file) if File.exist?(path_to_file)
+
+  
 
     
 
