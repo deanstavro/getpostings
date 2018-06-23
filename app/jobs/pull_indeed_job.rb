@@ -84,13 +84,22 @@ class PullIndeedJob < ApplicationJob
 
     sleep 15
 
+    if url.include?"https://www.indeed.com/jobs?"
+      url.delete!('https://www.indeed.com/jobs?') 
+    end
+
+    query_id= query.id
+    file_name_aws = query.id.to_s + "_" + user.first_name + "_" + url + ".csv"
+    puts "FILE NAME"
+    puts file_name_aws
+
     begin
 
       # Get AWS credentials and connect to s3
       s3 = Aws::S3::Resource.new(credentials: Aws::Credentials.new('AKIAI3YSAR6H2RJ4YJMA', 'aB11Vdv5nWKXVuG7cJYMdfVypjTOj1f//xtwbsff'),region: 'us-west-1')
       puts "UNO"
       #create object with bucket choose bucket
-      obj = s3.bucket('getpostings').object(url.to_s + '.csv')
+      obj = s3.bucket('getpostings').object(file_name_aws)
       obj.upload_file(path_to_file, acl:'public-read')
       puts "DOS"
       # Delete the file after is has been uploaded
