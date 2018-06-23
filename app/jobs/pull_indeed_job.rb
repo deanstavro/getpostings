@@ -90,7 +90,7 @@ class PullIndeedJob < ApplicationJob
       s3 = Aws::S3::Resource.new(credentials: Aws::Credentials.new('AKIAI3YSAR6H2RJ4YJMA', 'aB11Vdv5nWKXVuG7cJYMdfVypjTOj1f//xtwbsff'),region: 'us-west-1')
       puts "UNO"
       #create object with bucket choose bucket
-      obj = s3.bucket('getpostings').object('data.csv')
+      obj = s3.bucket('getpostings').object(url.to_s + '.csv')
       obj.upload_file(path_to_file, acl:'public-read')
       puts "DOS"
       # Delete the file after is has been uploaded
