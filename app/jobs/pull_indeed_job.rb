@@ -69,36 +69,44 @@ class PullIndeedJob < ApplicationJob
     end
 
 
+
     Spreadsheet.client_encoding = 'UTF-8'
     book = Spreadsheet::Workbook.new
-    sheet1 = book.create_worksheet(:name => 'Campaign')
-    sheet2 = book.create_worksheet(:name => 'Contacts')
+    
+    populateSpreadsheet(book, bridges)
 
-    sheet1.row(0).concat ["Company"]
-
-    row_number = 1
-
-    bridges.each do |bridge|
-      sheet1.row(row_number).concat([bridge])
-      row_number = row_number+1
-    end
-
-
+    
     directory_name = "tmp/csv"
     Dir.mkdir(directory_name) unless File.exists?(directory_name)
     
     path_to_file = File.join(Rails.root, 'tmp/csv', "data.xls")
     book.write path_to_file
-    
-    s3 = Aws::S3::Resource.new(credentials: Aws::Credentials.new('AKIAI3YSAR6H2RJ4YJMA', 'aB11Vdv5nWKXVuG7cJYMdfVypjTOj1f//xtwbsff'), region: 'us-west-2')
 
-    obj = s3.bucket('getpostings').object("development/data.xls")
-    obj.upload_file(path_to_file, acl:'public-read')
+    sleep 15
+
+    begin
+
+      # Get AWS credentials and connect to s3
+      s3 = Aws::S3::Resource.new(credentials: Aws::Credentials.new('AKIAI3YSAR6H2RJ4YJMA', 'aB11Vdv5nWKXVuG7cJYMdfVypjTOj1f//xtwbsff'),region: 'us-west-1')
+      puts "UNO"
+      #create object with bucket choose bucket
+      obj = s3.bucket('getpostings').object('data.csv')
+      obj.upload_file(path_to_file, acl:'public-read')
+      puts "DOS"
+      # Delete the file after is has been uploaded
+      File.delete(path_to_file) if File.exist?(path_to_file)
+      puts "TRES"
+
+      aws_url = obj.public_url.to_s
+      query.update_attribute(:file_download, aws_url)
+      
+    rescue
+      puts "COULD NOT UPLOAD INTO AWS"
+    end
+
 
     # Delete the file after is has been uploaded
     File.delete(path_to_file) if File.exist?(path_to_file)
-
-  
 
     
 
@@ -163,6 +171,7 @@ class PullIndeedJob < ApplicationJob
     return count
   end
 
+
   def getUrl(url, limit, n)
 
     if url.include? "&limit=" #limit=<number>, change <number> to 50
@@ -176,6 +185,21 @@ class PullIndeedJob < ApplicationJob
     url = url +"&start="+n.to_s
 
     return url
+  end
+
+
+  def populateSpreadsheet(book, bridges)
+    sheet1 = book.create_worksheet(:name => 'Campaign')
+    sheet2 = book.create_worksheet(:name => 'Contacts')
+
+    sheet1.row(0).concat ["Company"]
+
+    row_number = 1
+
+    bridges.each do |bridge|
+      sheet1.row(row_number).concat([bridge])
+      row_number = row_number+1
+    end
   end
 
 

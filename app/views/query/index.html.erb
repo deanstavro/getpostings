@@ -26,7 +26,12 @@
         <tr>
           <td><%=query.source %></td>
           <td><%= query.url %></td>
-          <td><%= query.file_download %></td>
+          <% if query.file_download.present? %>
+            <td><%= link_to 'download csv', query.file_download %> 
+              <%=  %></a></td>
+          <% else %>
+            <td>downloading ...</td>
+          <% end %>
         </tr>
       <% end %>
     </tbody>
