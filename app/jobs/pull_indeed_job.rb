@@ -7,7 +7,7 @@ class PullIndeedJob < ApplicationJob
 
 	def perform(query, user, company)
     
-    puts "Starting PullIndeed Job"
+    puts "Starting Pull Indeed Job"
 
     total_limit = 950
     limit = 50
@@ -47,10 +47,13 @@ class PullIndeedJob < ApplicationJob
         begin
           #Get Company Name
           company_name = getIndeedCompanyName(company)
+          # Get Open Position
+          job_title = getIndeedJobTitle(company)
           puts company_name
+          puts job_title
 
           bridges.push(
-            company_name.to_s
+            [company_name,job_title]
             )
 
         rescue
@@ -201,15 +204,33 @@ class PullIndeedJob < ApplicationJob
     sheet1 = book.create_worksheet(:name => 'Campaign')
     sheet2 = book.create_worksheet(:name => 'Contacts')
 
-    sheet1.row(0).concat ["Company"]
+    sheet1.row(0).concat ["Company","Job Title"]
 
     row_number = 1
 
     bridges.each do |bridge|
-      sheet1.row(row_number).concat([bridge])
+      sheet1.row(row_number).concat(bridge)
       row_number = row_number+1
     end
   end
+
+  
+
+  def getIndeedJobTitle(company)
+
+    begin
+      count_text = company.css('.jobtitle').to_s
+      position = count_text.split('title=')[1].split('"')[1].to_s
+      return position.to_s
+    rescue
+
+      return "NOT FOUND"
+
+    end
+
+
+  end
+
 
 
 
