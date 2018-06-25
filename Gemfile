@@ -30,6 +30,7 @@ gem 'nokogiri', '1.8.2'
 gem 'paperclip'
 gem 'aws-sdk', '~> 2.3'
 gem 'spreadsheet'
+gem 'rails-html-sanitizer'
 
 group :test do
   gem 'sqlite3'

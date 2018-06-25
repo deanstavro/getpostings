@@ -9,10 +9,14 @@
     <ul class="navbar-nav ml-auto nav-fill w-50">
       <% if user_signed_in? %>
 
-        <li class="nav-item active"> <%= link_to 'Leads', leads_path %></li>
+        <% if false %>
+            <li class="nav-item active"> <%= link_to 'Edit Account', edit_client_companies_path()%> </li>
+            <li class="nav-item active"> <%= link_to 'Leads', leads_path %></li>
+        <% end %>
 
+        
+        <li class="nav-item active"> <%= link_to 'Download Posts', root_url %></li>
         <li class="nav-item active"> <%= link_to 'Edit User', edit_user_registration_path %></li>
-        <li class="nav-item active"> <%= link_to 'Edit Account', edit_client_companies_path()%> </li>
         <li class="nav-item active"> <%= link_to 'Sign out', destroy_user_session_path, :method=>'delete' %></li>
       <% end %>
     </ul>

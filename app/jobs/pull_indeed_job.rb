@@ -9,11 +9,11 @@ class PullIndeedJob < ApplicationJob
     
     puts "Starting Pull Indeed Job"
 
+    base_url = "https://www.indeed.com"
     total_limit = 950
     limit = 50
     url = query.url
-    html = open(url)
-    doc = Nokogiri::HTML(html)
+    doc = getNokogiriPage(url)
 
     #Get number of companies
     counter = getIndeedCount(doc)
@@ -26,34 +26,66 @@ class PullIndeedJob < ApplicationJob
     bridges = []
     # Loop through all pages, with the limit being 50, and the start being n
     (0..count).step(limit) do |n|
+      # Reset Url
       url = query.url
       
       url = getUrl(url, limit, n)
       puts "URL"
       puts url.to_s
 
-      html = open(url)
-      doc = Nokogiri::HTML(html)
+      doc = getNokogiriPage(url)
 
-      
       company_info_list = getIndeedCompany(doc)
 
-      #puts len(company_info_list).to_s
-      
+      #Loop through every record on the page to grab contents
       company_info_list.each do |company|
 
-
-
         begin
+
           #Get Company Name
           company_name = getIndeedCompanyName(company)
           # Get Open Position
           job_title = getIndeedJobTitle(company)
+          # Get Location
+          location = getLocation(company)
+          # Get Summary
+          summary = getSummary(company)
+          # Get Summary link
+          
+          begin
+            indeed_company_link = getIndeedCompanyLink(base_url,company)
+          rescue
+            indeed_company_link = ""
+          end
+
+
+          if indeed_company_link != ""
+            # Get company about detail page if available 
+            job_opening_page_scrape = getNokogiriPage(indeed_company_link)
+
+            if job_opening_page_scrape != nil
+              company_domain = getDomain(job_opening_page_scrape)
+            else
+              company_domain = ""
+            end
+          else
+
+            company_domain = ""
+          end
+
+          # Get summary
+          
+
           puts company_name
           puts job_title
+          puts location
+          puts summary
+          puts company_domain
+          puts indeed_company_link
+          #puts summary
 
           bridges.push(
-            [company_name,job_title]
+            [company_name,job_title, location, summary, company_domain, indeed_company_link]
             )
 
         rescue
@@ -204,7 +236,7 @@ class PullIndeedJob < ApplicationJob
     sheet1 = book.create_worksheet(:name => 'Campaign')
     sheet2 = book.create_worksheet(:name => 'Contacts')
 
-    sheet1.row(0).concat ["Company","Job Title"]
+    sheet1.row(0).concat ["Company","Job Title", "City/State", "Open Position Summary", "Company Domain", "Indeed Company Page"]
 
     row_number = 1
 
@@ -221,7 +253,11 @@ class PullIndeedJob < ApplicationJob
     begin
       count_text = company.css('.jobtitle').to_s
       position = count_text.split('title=')[1].split('"')[1].to_s
-      return position.to_s
+
+      position.sub! '&amp;', 'and'
+
+
+      return position
     rescue
 
       return "NOT FOUND"
@@ -234,10 +270,98 @@ class PullIndeedJob < ApplicationJob
 
 
 
+  def getLocation(company)
+
+    begin
+      count_text = company.css('.location').to_s
+      location = count_text.split('>')[1].split('<')[0].to_s
+
+      location.sub! '&amp;', 'and'
+
+      return location
+    rescue
+
+      return "NOT FOUND"
+
+    end
+  end
+
+
+  def getSummary(company)
+
+    begin
+      count_text = company.css('.summary').to_s
+
+      full_sanitizer = Rails::Html::FullSanitizer.new
+      text = full_sanitizer.sanitize(count_text)
+      return text
+    rescue
+
+      return "NOT FOUND"
+
+    end
+  end
 
 
 
 
+  def getIndeedCompanyLink(base_url, company)
+    count_text = company.css('.company').to_s
+    
+    if count_text.include? "href"
+      indeed_company_link = count_text.split('href="')[1].split('"')[0]
+      cmpy_about_page = base_url + indeed_company_link+"/about"
+      return cmpy_about_page
+    else
+      return ""
+    end
+  end
+
+
+
+  def getNokogiriPage(link)
+    html = open(link)
+    doc = Nokogiri::HTML(html)
+    sleep 1
+    return doc
+  end
+
+
+
+
+
+  def getDomain(job_opening_page_scrape)
+
+
+    begin
+        sidebar = job_opening_page_scrape.at_css("dl#cmp-company-details-sidebar")
+
+        begin
+        
+
+          sidebar.search('dt').each do |node|#.css('dt. a').map { |link| link['href'] }
+            if "#{node.text}" == "Links"
+              next_node = "#{node.next_element}".to_s
+              link = next_node.split('"')[1]
+              return link.to_s
+
+            end
+          end
+
+          return ""
+
+
+          #puts l[0]
+          #return l[0].to_s
+        rescue
+          return ""
+        end
+        
+        
+    rescue
+      return ""
+    end
+  end
 
 
 end
