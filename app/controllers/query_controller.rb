@@ -22,6 +22,8 @@ class QueryController < ApplicationController
     	@query.client_company = @company
 
     	if  @query.save
+    		indeed_link = getIndeedLink(@query)
+    		@query.update_attribute(:url, indeed_link)
     		aws_link = PullIndeedJob.perform_later(@query, @user, @company)
     		
 			redirect_to root_path, :notice => "Your job is executing!"
@@ -38,7 +40,16 @@ class QueryController < ApplicationController
 
 
 	def query_params
-      params.require(:query).permit(:source, :url)
+      params.require(:query).permit(:source, :url, :keywords, :location)
+	end
+
+	def getIndeedLink(query)
+		base_url = "https://www.indeed.com/jobs?q="
+
+		key = query.keywords.gsub(' ','+')
+		location = query.location.gsub(' ','+')
+
+		return base_url+key+"&l="+location
 	end
 
 

@@ -6,19 +6,20 @@
 
 <div id="title" class="jumbotron">
   <br/>
-  <h1>Your Automated Jobs</h1>
+  <h1>Pull Companies With Job Postings</h1>
   <br>
   <%= link_to '+ Execute Job', new_query_path, :class=>"add_campaign btn btn-primary btn-xl page-scroll" %>
 </div>
 
-<div class="table-display table-padding">
+<div class="table-display">
 
   <table class="table table-hover"> 
     <thead class="thead-dark">
       <tr class="text-center">
         <th scope="col">Date Created</th>
         <th scope="col">Source</th>
-        <th scope="col">URL</th>
+        <th scope="col">Keywords</th>
+        <th scope="col">Location</th>
         <th scope="col">CSV File</th>
     </thead>
     
@@ -27,7 +28,8 @@
         <tr>
           <td><%=query.created_at %></td>
           <td><%=query.source %></td>
-          <td><%= query.url %></td>
+          <td><%= query.keywords %></td>
+          <td><%= query.location %></td>
           <% if query.file_download.present? %>
             <td><%= link_to 'download csv', query.file_download %> 
               <%=  %></a></td>
