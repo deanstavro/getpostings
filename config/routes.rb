@@ -26,6 +26,7 @@ Rails.application.routes.draw do
     # Set Root Url
     authenticated :user do
         root 'query#index'
+        #root 'users#show'
     end 
     root to: 'homepage#index'
 

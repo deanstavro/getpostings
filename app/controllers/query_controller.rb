@@ -1,5 +1,6 @@
 class QueryController < ApplicationController
 	before_action :authenticate_user!
+	#include Wicked::Wizard
 
 	def index
 		@user = User.find(current_user.id)
@@ -22,9 +23,16 @@ class QueryController < ApplicationController
     	@query.client_company = @company
 
     	if  @query.save
-    		indeed_link = getIndeedLink(@query)
-    		@query.update_attribute(:url, indeed_link)
-    		aws_link = PullIndeedJob.perform_later(@query, @user, @company)
+
+    		if @query.source == "indeed"
+	    		indeed_link = getIndeedLink(@query)
+	    		@query.update_attribute(:url, indeed_link)
+	    		aws_link = PullIndeedJob.perform_later(@query, @user, @company)
+	    	else
+	    		yellow_pages_link = getYellowPagesLink(@query)
+	    		@query.update_attribute(:url, yellow_pages_link)
+	    		aws_link = PullYellowPagesJob.perform_later(@query, @user, @company)
+	    	end
     		
 			redirect_to root_path, :notice => "Your job is executing!"
 			return
@@ -52,6 +60,14 @@ class QueryController < ApplicationController
 		return base_url+key+"&l="+location
 	end
 
+	def getYellowPagesLink(query)
+		base_url = "http://www.yellowpages.com/search?search_terms="
+
+		key = query.keywords.gsub(' ','+').gsub(',','')
+		location = query.location.gsub(' ','+').gsub(',','')
+
+		return base_url+key+"&geo_location_terms="+location
+	end
 
 
 

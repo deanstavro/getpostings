@@ -31,6 +31,7 @@ gem 'paperclip'
 gem 'aws-sdk', '~> 2.3'
 gem 'spreadsheet'
 gem 'rails-html-sanitizer'
+gem 'wicked'
 
 group :test do
   gem 'sqlite3'

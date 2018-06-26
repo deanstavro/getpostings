@@ -1,20 +1,18 @@
 class UsersController < ApplicationController
   before_action :authenticate_user!
-  before_action :admin_only, :except => :home
+  before_action :admin_only, :except => :show
 
   def index
     @users = User.all
   end
 
   # Action when user signs in
-  def home   
+  def show 
 
     if user_signed_in?
 
       @user = find_user
       @client_company = find_company
-
-      redirect_to leads_path
 
       # Direct to personas if account is live
       #if account_live

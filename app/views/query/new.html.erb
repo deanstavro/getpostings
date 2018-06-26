@@ -5,12 +5,12 @@
     
     <div class="form-group">
       <%= f.label :source %><br>
-      <%= f.select(:source, [['indeed', 'indeed']], :autofocus => true, class: 'form-control') %>
+      <%= f.select(:source, [['indeed', 'indeed'],['yellow pages', 'yellow_pages']], :autofocus => true, class: 'form-control') %>
     </div>
 
 
     <div class="form-group">
-      <%= f.label :keywords, "Job title, keywords, or company"%>
+      <%= f.label :keywords, "Job title, business type, keywords, or company"%>
       <%= f.text_field :keywords, :autofocus => true, required: true, class: 'form-control' %>
     </div>
 
