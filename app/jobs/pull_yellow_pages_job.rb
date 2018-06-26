@@ -87,44 +87,44 @@ class PullYellowPagesJob < ApplicationJob
 
 
   		Spreadsheet.client_encoding = 'UTF-8'
-		book = Spreadsheet::Workbook.new
+  		book = Spreadsheet::Workbook.new
 
-		populateSpreadsheet(book, bridges)
-
-
-		directory_name = "tmp/csv"
-		Dir.mkdir(directory_name) unless File.exists?(directory_name)
-
-		path_to_file = File.join(Rails.root, 'tmp/csv', "yellow_pages.xls")
-		book.write path_to_file
-
-		sleep 15
-
-		query_id = query.id
-		url = query.url
-		file_name_aws = query.id.to_s + "_" + user.first_name + "_" + url + ".csv"
-		puts "FILE NAME"
-		puts file_name_aws
+  		populateSpreadsheet(book, bridges)
 
 
-		begin
+  		directory_name = "tmp/csv"
+  		Dir.mkdir(directory_name) unless File.exists?(directory_name)
 
-      	  # Get AWS credentials and connect to s3
-		  s3 = Aws::S3::Resource.new(credentials: Aws::Credentials.new('AKIAI3YSAR6H2RJ4YJMA', 'aB11Vdv5nWKXVuG7cJYMdfVypjTOj1f//xtwbsff'),region: 'us-west-1')
-		  puts "UNO"
-		  #create object with bucket choose bucket
-		  obj = s3.bucket('getpostings').object(file_name_aws)
-		  obj.upload_file(path_to_file, acl:'public-read')
-		  puts "DOS"
-		  # Delete the file after is has been uploaded
-		  File.delete(path_to_file) if File.exist?(path_to_file)
-		  puts "TRES"
+  		path_to_file = File.join(Rails.root, 'tmp/csv', "yellow_pages.xls")
+  		book.write path_to_file
 
-		  aws_url = obj.public_url.to_s
-		  query.update_attribute(:file_download, aws_url)
+  		sleep 15
+
+  		query_id = query.id
+  		url = query.url
+  		file_name_aws = query.id.to_s + "_" + user.first_name + "_" + url + ".csv"
+  		puts "FILE NAME"
+  		puts file_name_aws
+
+
+		  begin
+
+        # Get AWS credentials and connect to s3
+    	  s3 = Aws::S3::Resource.new(credentials: Aws::Credentials.new('AKIAI3YSAR6H2RJ4YJMA', 'aB11Vdv5nWKXVuG7cJYMdfVypjTOj1f//xtwbsff'),region: 'us-west-1')
+    	  puts "UNO"
+    	  #create object with bucket choose bucket
+    	  obj = s3.bucket('getpostings').object(file_name_aws)
+    	  obj.upload_file(path_to_file, acl:'public-read')
+    	  puts "DOS"
+    	  # Delete the file after is has been uploaded
+    	  File.delete(path_to_file) if File.exist?(path_to_file)
+    	  puts "TRES"
+
+    	  aws_url = obj.public_url.to_s
+    	  query.update_attribute(:file_download, aws_url)
       
     	rescue
-      	  puts "COULD NOT UPLOAD INTO AWS"
+      	puts "COULD NOT UPLOAD INTO AWS"
     	end
 
     	# Delete the file after is has been uploaded
@@ -135,8 +135,6 @@ class PullYellowPagesJob < ApplicationJob
   	end
 
   end
-
-
 
 
 
