@@ -1,0 +1,14 @@
+<center>
+  <p class="container text-danger"><%= flash[:error] %></p>
+  <p class="container text-success"><%= flash[:notice] %></p>
+</center>
+
+<div class="authform">
+  <%= form_tag @query, :url => {:action => "create"}, html: { method: :post }, multipart: true do %>
+              <%= file_field_tag :file %><br><br>
+              <%= submit_tag "Import CSV" %>
+  <% end %>
+
+
+
+</div>
