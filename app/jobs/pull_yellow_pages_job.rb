@@ -40,7 +40,7 @@ class PullYellowPagesJob < ApplicationJob
   			new_url = url+to_concat
   			puts "NEW URL"
   			puts new_url
-
+        sleep 2
   			doc = getNokogiriPage(new_url)
 
   			company = getRowArray(doc)

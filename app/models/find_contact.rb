@@ -1,0 +1,2 @@
+class FindContact < ApplicationRecord
+end

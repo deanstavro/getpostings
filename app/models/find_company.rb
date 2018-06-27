@@ -1,4 +1,4 @@
-class Query < ApplicationRecord
+class FindCompany < ApplicationRecord
 	 enum source: [:yelp, :indeed, :yellow_pages]
 	 belongs_to :client_company
 

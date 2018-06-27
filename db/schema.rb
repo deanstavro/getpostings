@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180626200406) do
+ActiveRecord::Schema.define(version: 20180627184432) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -100,6 +100,28 @@ ActiveRecord::Schema.define(version: 20180626200406) do
     t.datetime "updated_at",   null: false
   end
 
+  create_table "find_companies", force: :cascade do |t|
+    t.integer  "source"
+    t.string   "url"
+    t.string   "file_download"
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
+    t.integer  "client_company_id"
+    t.string   "keywords"
+    t.string   "location"
+    t.string   "status"
+    t.index ["client_company_id"], name: "index_find_companies_on_client_company_id", using: :btree
+  end
+
+  create_table "find_contacts", force: :cascade do |t|
+    t.string   "csv_file"
+    t.string   "download_file"
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
+    t.integer  "client_company_id"
+    t.index ["client_company_id"], name: "index_find_contacts_on_client_company_id", using: :btree
+  end
+
   create_table "leads", force: :cascade do |t|
     t.boolean  "decision_maker"
     t.text     "internal_notes"
@@ -138,19 +160,6 @@ ActiveRecord::Schema.define(version: 20180626200406) do
     t.index ["client_company_id"], name: "index_leads_on_client_company_id", using: :btree
   end
 
-  create_table "queries", force: :cascade do |t|
-    t.integer  "source"
-    t.string   "url"
-    t.string   "file_download"
-    t.datetime "created_at",        null: false
-    t.datetime "updated_at",        null: false
-    t.integer  "client_company_id"
-    t.string   "keywords"
-    t.string   "location"
-    t.string   "status"
-    t.index ["client_company_id"], name: "index_queries_on_client_company_id", using: :btree
-  end
-
   create_table "users", force: :cascade do |t|
     t.string   "email",                  default: "", null: false
     t.string   "encrypted_password",     default: "", null: false
@@ -175,8 +184,9 @@ ActiveRecord::Schema.define(version: 20180626200406) do
   end
 
   add_foreign_key "accounts", "client_companies"
+  add_foreign_key "find_companies", "client_companies"
+  add_foreign_key "find_contacts", "client_companies"
   add_foreign_key "leads", "accounts"
   add_foreign_key "leads", "client_companies"
-  add_foreign_key "queries", "client_companies"
   add_foreign_key "users", "client_companies"
 end

@@ -1,6 +1,6 @@
-class CreateQueries < ActiveRecord::Migration[5.0]
+class CreateFindCompanies < ActiveRecord::Migration[5.0]
   def change
-    create_table :queries do |t|
+    create_table :find_companies do |t|
       t.integer :source
       t.string :url
       t.string :file_download

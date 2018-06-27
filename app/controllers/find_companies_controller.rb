@@ -1,4 +1,4 @@
-class QueryController < ApplicationController
+class FindCompaniesController < ApplicationController
 	before_action :authenticate_user!
 	#include Wicked::Wizard
 
@@ -6,12 +6,12 @@ class QueryController < ApplicationController
 		@user = User.find(current_user.id)
   		@company = ClientCompany.find_by(id: @user.client_company_id)
     	# grab reports and grab leads for every week for a report
-    	@queries = Query.where(client_company_id: @company.id).order('updated_at DESC').paginate(:page => params[:page], :per_page => 20)
+    	@queries = FindCompany.where(client_company_id: @company.id).order('updated_at DESC').paginate(:page => params[:page], :per_page => 20)
 	end
 
 
 	def new
-		@query = Query.new
+		@query = FindCompany.new
 	end
 
 
@@ -19,7 +19,7 @@ class QueryController < ApplicationController
 		@user = User.find(current_user.id)
     	@company = ClientCompany.find_by(id: @user.client_company_id)
 
-    	@query = Query.new(query_params)
+    	@query = FindCompany.new(query_params)
     	@query.client_company = @company
 
     	if  @query.save
@@ -34,10 +34,10 @@ class QueryController < ApplicationController
 	    		aws_link = PullYellowPagesJob.perform_later(@query, @user, @company)
 	    	end
     		
-			redirect_to root_path, :notice => "Your job is executing!"
+			redirect_to find_companies_path, :notice => "Your job is executing!"
 			return
 		else
-			redirect_to root_path, :notice => "Could not execute job!"
+			redirect_to find_companies_path, :notice => "Could not execute job!"
 			return
 		end
 
@@ -48,7 +48,7 @@ class QueryController < ApplicationController
 
 
 	def query_params
-      params.require(:query).permit(:source, :url, :keywords, :location)
+      params.require(:find_company).permit(:source, :url, :keywords, :location)
 	end
 
 	def getIndeedLink(query)

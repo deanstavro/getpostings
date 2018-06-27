@@ -1,0 +1,45 @@
+<center>
+  <p class="container text-danger"><%= flash[:error] %></p>
+  <p class="container text-success"><%= flash[:notice] %></p>
+</center>
+
+
+<div id="title" class="jumbotron">
+  <br/>
+  <h1>Download Companies</h1>
+  <br>
+  <%= link_to '+ Execute Job', new_find_company_path, :class=>"add_campaign btn btn-primary btn-xl page-scroll" %>
+</div>
+
+<div class="table-display">
+
+  <table class="table table-hover"> 
+    <thead class="thead-dark">
+      <tr class="text-center">
+        <th scope="col">Date Created</th>
+        <th scope="col">Source</th>
+        <th scope="col">Keywords</th>
+        <th scope="col">Location</th>
+        <th scope="col">CSV File</th>
+    </thead>
+    
+    <tbody class="text-center">
+      <% @queries.each do |query| %>
+        <tr>
+          <td><%=query.created_at %></td>
+          <td><%=query.source %></td>
+          <td><%= query.keywords %></td>
+          <td><%= query.location %></td>
+          <% if query.file_download.present? %>
+            <td><%= link_to 'download csv', query.file_download %> 
+              <%=  %></a></td>
+          <% else %>
+            <td>downloading ...</td>
+          <% end %>
+        </tr>
+      <% end %>
+    </tbody>
+
+
+  </table>
+</div>

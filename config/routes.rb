@@ -25,7 +25,7 @@ Rails.application.routes.draw do
 
     # Set Root Url
     authenticated :user do
-        root 'query#index'
+        root 'find_companies#index'
         #root 'users#show'
     end 
     root to: 'homepage#index'
@@ -45,7 +45,8 @@ Rails.application.routes.draw do
 
     
     resources :users
-    resources :query
+    resources :find_companies
+    resources :find_contacts
 
     # Nested In Client Companies
     resource :client_companies, path: '', only: [:edit, :update, :delete] do 
