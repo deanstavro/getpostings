@@ -1,11 +1,17 @@
 class PullIndeedJob < ApplicationJob
 	queue_as :default
+  
+
   require 'open-uri'
   require 'nokogiri'
   require 'json'
-  require "csv"
+  require 'csv'
 
-	def perform(query, user, company)
+  include Nokogiri
+
+	
+
+  def perform(query, user, company)
     
     puts "Starting Pull Indeed Job"
 

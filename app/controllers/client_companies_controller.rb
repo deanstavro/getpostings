@@ -1,5 +1,4 @@
 class ClientCompaniesController < ApplicationController
-
   before_action :authenticate_user!
 
   def update
