@@ -57,11 +57,21 @@ class PullYellowPagesJob < ApplicationJob
           			company = getRowArray(html_doc)
 
                 #### Loop through all the rows on the page for yellow page we're on #######
+                indexer = 0
           			for row in company
+                    
+                    #If the yellow page array has more than 30, it's because of sponsored ads
+                    indexer = indexer + 1
+                    if indexer > limit
+                        break
+                    end
+                    
+
                     #print the row
             				#puts row.to_s
             				
             				# Get Company Name
+
             				company_name = getCompanyName(row)
             				puts "COMPANY NAME: " + company_name.to_s
             				
@@ -166,17 +176,21 @@ class PullYellowPagesJob < ApplicationJob
 
 
     def getRowArray(html_doc)
-  	    company_docs = html_doc.xpath("//div[@class='info']")
+  	    company_doc = html_doc.at_css("div.scrollable-pane")
+        company_docs = company_doc.xpath("//div[@class='info']")
   	    return company_docs
     end
 
 
     def getCompanyName(row)
       	count_text = row.at_css("a.business-name").to_s
-
+        puts "HI"
+        puts count_text
       	full_sanitizer = Rails::Html::FullSanitizer.new
-        text = full_sanitizer.sanitize(count_text).to_s
-        return_text = text.gsub '&amp;', 'and'
+        t = full_sanitizer.sanitize(count_text).to_s
+        puts t
+        text = t.gsub "â", "'"
+        return_text = text.gsub '&amp;', '&'
 
       	return return_text
     end
@@ -196,7 +210,7 @@ class PullYellowPagesJob < ApplicationJob
           	count_t = row.at_css("span.street-address").to_s
             full_sanitizer = Rails::Html::FullSanitizer.new
             text = full_sanitizer.sanitize(count_t).to_s
-            return_text = text.gsub '&amp;', 'and'
+            return_text = text.gsub '&amp;', '&'
           	return return_text
         rescue
           return ""
@@ -208,7 +222,7 @@ class PullYellowPagesJob < ApplicationJob
             count_t = row.at_css("span.locality").to_s
             full_sanitizer = Rails::Html::FullSanitizer.new
             text = full_sanitizer.sanitize(count_t).to_s
-            t1 = text.gsub '&amp;', 'and'
+            t1 = text.gsub '&amp;', '&'
             t2 = t1.gsub ',&nbsp;', ''
             t3 = t2.gsub ',', ''
             return t3
@@ -254,7 +268,7 @@ class PullYellowPagesJob < ApplicationJob
             full_sanitizer = Rails::Html::FullSanitizer.new
             te = full_sanitizer.sanitize(count_text).to_s
             
-            text = te.gsub '&amp;', 'and'
+            text = te.gsub '&amp;', '&'
 
             if text.include? "No Internet"
                 return ""
