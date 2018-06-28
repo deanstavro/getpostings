@@ -36,12 +36,6 @@ module SpreadsheetHelp
         sleep 5
 	end
 
-    class Upload
-        mount_uploader :file, FileUploader
-    end
-
-
-
 
 
 
