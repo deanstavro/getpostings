@@ -110,7 +110,7 @@ class PullIndeedJob < ApplicationJob
 
         path_to_file= File.join(Rails.root, directory_name, file_name)
         writeSpreadsheetToFile(directory_name, book, path_to_file)
-        file_name_aws = "indeed/"+ query.id.to_s + "_" + query.location.to_s + "_" + query.keywords.to_s +"_jobpostings.csv"
+        file_name_aws = "indeed/"+ query.id.to_s + "_" + query.location.to_s + "_" + query.keywords.to_s + "_jobpostings.csv"
         puts "FILE NAME: " + file_name_aws
 
         begin
