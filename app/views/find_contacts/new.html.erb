@@ -4,9 +4,11 @@
 </center>
 
 <div class="authform">
+  <h3>Download Contacts</h3>
+  <p> Upload a CSV with a 'company_domain' field, and we'll pull all the associated e-mails for that company</p>
   <%= form_tag @query, :url => {:action => "create"}, html: { method: :post }, multipart: true do %>
               <%= file_field_tag :file %><br><br>
-              <%= submit_tag "Import CSV" %>
+              <%= submit_tag "Import CSV", :class => 'button' %>
   <% end %>
 
 

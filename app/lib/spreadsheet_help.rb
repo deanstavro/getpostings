@@ -1,6 +1,7 @@
 
 require 'json'
 require 'csv'
+require 'spreadsheet'
 
 module SpreadsheetHelp
 
@@ -28,11 +29,18 @@ module SpreadsheetHelp
 
     #saves a spreadsheet to a local folder
     def  writeSpreadsheetToFile(directory_name, book, path_to_file)
+        puts "writing spreadsheet to file"
         Dir.mkdir(directory_name) unless File.exists?(directory_name)
         book.write path_to_file
 
         sleep 5
 	end
+
+    class Upload
+        mount_uploader :file, FileUploader
+    end
+
+
 
 
 

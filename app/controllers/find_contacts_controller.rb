@@ -1,4 +1,6 @@
 class FindContactsController < ApplicationController
+  include SpreadsheetHelp
+  include Aws
 	before_action :authenticate_user!
 	require 'csv'
 
@@ -31,20 +33,22 @@ class FindContactsController < ApplicationController
           			csv_file = csv_file_n.path
           			file_name = File.basename(csv_file).to_s
 
-
           			headers = CSV.read(csv_file, headers: true).headers
 
           			puts headers.to_s
 
-          			if headers.include?('company_domain')
+          			if headers.include?('company_domain') or headers.include? 'Company_domain'
+
+                    directory_name = "tmp/csv"
+                    file_name = "contacts.xls"
+                    path_to_file= File.join(Rails.root, directory_name, file_name)
+
+                    writeSpreadsheetToFile(directory_name, csv_file, path_to_file)
           				
-          				GetHunterContactsJob.perform_later(csv_file, @user, @company)
+          				  GetHunterContactsJob.perform_later(csv_file, @user, @company)
 
-
-
-
-          				redirect_to find_contacts_path, :flash => { :notice => "File Uploaded. Job has started!" }
-          				return
+          				  redirect_to find_contacts_path, :flash => { :notice => "File Uploaded. Job has started!" }
+          				  return
 
           				
 

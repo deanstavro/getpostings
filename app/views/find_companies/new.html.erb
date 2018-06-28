@@ -1,11 +1,12 @@
 <div class="authform">
-  <h3>Execute Job</h3>
+  <h3>Download Companies</h3>
+  <p> Pull CSVs of companies with job postings, or pull a company directory in a certain location </p>
   <%= form_for @query, :url => {:action => "create"}, html: { method: :post } do |f| %>
 
     
     <div class="form-group">
-      <%= f.label :source %><br>
-      <%= f.select(:source, [['indeed', 'indeed'],['yellow pages', 'yellow_pages']], :autofocus => true, class: 'form-control') %>
+      <%= f.label :source, "" %><br>
+      <%= f.select(:source, [['job postings', 'indeed'],['company directory', 'yellow_pages']], :autofocus => true, class: 'form-control') %>
     </div>
 
 
@@ -20,6 +21,6 @@
     </div>
 
 
-    <%= f.submit 'Execute', :class => 'button' %>
+    <%= f.submit 'Download CSV', :class => 'button' %>
   <% end %>
 </div>
