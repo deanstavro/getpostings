@@ -24,7 +24,7 @@ class FindCompaniesController < ApplicationController
 
     	if  @query.save
 
-    		if @query.source == "indeed"
+    		if @query.source == "search by job postings"
 	    		indeed_link = getIndeedLink(@query)
 	    		@query.update_attribute(:url, indeed_link)
 	    		aws_link = PullIndeedJob.perform_later(@query, @user, @company)

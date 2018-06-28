@@ -68,9 +68,22 @@ class PullYellowPagesJob < ApplicationJob
                     # Get Company Number
             				phone_number = getPhoneNumber(row)
             				puts "PHONE NUMBER: " + phone_number
-            				# Get Company Address
+            				
+                    # Get Company Address
             				address = getAddress(row)
-            				puts "ADRESS: " + address
+            				puts "STREET ADDRESS: " + address
+
+                    #Get Company City
+                    city = getCity(row)
+                    puts "CITY: " + city
+
+                    #Get Company State
+                    state = getState(row)
+                    puts "STATE: " + state
+
+                    #Get Company State
+                    zipcode = getZipcode(row)
+                    puts "ZIPCODE: " + zipcode
 
             				# Get Industry
             				industry = getIndustry(row)
@@ -82,7 +95,7 @@ class PullYellowPagesJob < ApplicationJob
 
                     #Create array to push into a spreadsheet
             				bridges.push(
-            					[company_name, phone_number, address, industry, company_domain]
+            					[company_name, phone_number, address, city, state, zipcode, industry, company_domain]
                       	)
 
             				puts "-------------------------------------------"
@@ -90,7 +103,7 @@ class PullYellowPagesJob < ApplicationJob
     		    end
 
             worksheet_name = "Companies"
-            headers = ["Company","Phone Number", "Address", "Industry", "Company Domain"]
+            headers = ["Company","Phone Number", "Street Address", "City", "State", "Zip Code", "Industry", "Company Domain"]
             
         		book = populateOneSpreadsheet(worksheet_name,headers,bridges)
 
@@ -163,9 +176,9 @@ class PullYellowPagesJob < ApplicationJob
 
       	full_sanitizer = Rails::Html::FullSanitizer.new
         text = full_sanitizer.sanitize(count_text).to_s
-        text.sub! '&amp;', 'and'
+        return_text = text.gsub '&amp;', 'and'
 
-      	return text
+      	return return_text
     end
 
     def getPhoneNumber(row)
@@ -173,34 +186,92 @@ class PullYellowPagesJob < ApplicationJob
 
       	full_sanitizer = Rails::Html::FullSanitizer.new
         text = full_sanitizer.sanitize(count_text).to_s
+        return_text = text.gsub("\n", ' ')
 
-      	return text
+      	return return_text
     end
 
     def getAddress(row)
-      	count_text = row.at_css("p.adr").to_s
+        begin
+          	count_t = row.at_css("span.street-address").to_s
+            full_sanitizer = Rails::Html::FullSanitizer.new
+            text = full_sanitizer.sanitize(count_t).to_s
+            return_text = text.gsub '&amp;', 'and'
+          	return return_text
+        rescue
+          return ""
+        end
+    end
 
-      	full_sanitizer = Rails::Html::FullSanitizer.new
-        text = full_sanitizer.sanitize(count_text).to_s
-        text.sub! '&amp;', 'and'
-      	return text
+    def getCity(row)
+        begin
+            count_t = row.at_css("span.locality").to_s
+            full_sanitizer = Rails::Html::FullSanitizer.new
+            text = full_sanitizer.sanitize(count_t).to_s
+            t1 = text.gsub '&amp;', 'and'
+            t2 = t1.gsub ',&nbsp;', ''
+            t3 = t2.gsub ',', ''
+            return t3
+        rescue
+            return ""
+        end
+
+    end
+
+    def getState(row)
+        begin
+            count_t = row.to_s
+            count_text = count_t.split('"addressRegion">')[1].split('<')[0]
+
+            return count_text
+        rescue
+            return ""
+        end
+
+    end
+
+    def getZipcode(row)
+        begin
+            count_t = row.to_s
+            count_text = count_t.split('"postalCode">')[1].split('<')[0]
+
+            return count_text
+        rescue
+            return ""
+        end
     end
 
 
     def getIndustry(row)
-      	count_text = row.at_css("div.categories").to_s
+        begin
+          	count_t = row.at_css("div.categories").to_s
+            
 
-      	full_sanitizer = Rails::Html::FullSanitizer.new
-        text = full_sanitizer.sanitize(count_text).to_s
-        text.sub! '&amp;', 'and'
-      	return text
+            counter = count_t.gsub(/<div.*?>|<\/div>/, '')
+            count_text_w_s = counter.gsub '><', '>, <'
+            count_text = count_text_w_s.gsub("\n", "")
+          	
+            full_sanitizer = Rails::Html::FullSanitizer.new
+            te = full_sanitizer.sanitize(count_text).to_s
+            
+            text = te.gsub '&amp;', 'and'
+
+            if text.include? "No Internet"
+                return ""
+            else
+          	    return text
+            end
+        rescue
+            return ""
+        end
     end
 
     def companyDomain(row)
     	  count_text = row.at_css("div.links").to_s
 
-    	  if count_text.include? "href"
-            company_link = count_text.split('href="')[1].split('"')[0].to_s
+    	  if count_text.include? 'LOC'
+
+            company_link = count_text.split('LOC')[1].split('"')[2].to_s
     		    return company_link
     	  else
     		    return ""

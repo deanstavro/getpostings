@@ -5,8 +5,8 @@
 
     
     <div class="form-group">
-      <%= f.label :source, "" %><br>
-      <%= f.select(:source, [['job postings', 'indeed'],['company directory', 'yellow_pages']], :autofocus => true, class: 'form-control') %>
+      <%= f.label :source, "Search" %><br>
+      <%= f.select(:source, [["search by location", "search by location"],["search by job postings", "search by job postings"]], :autofocus => true, class: 'form-control') %>
     </div>
 
 

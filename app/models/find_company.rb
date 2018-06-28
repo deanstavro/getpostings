@@ -1,5 +1,5 @@
 class FindCompany < ApplicationRecord
-	 enum source: [:yelp, :indeed, :yellow_pages]
+	 enum source: ["search by location", "search by job postings"]
 	 belongs_to :client_company
 
 	 
