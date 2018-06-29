@@ -51,7 +51,11 @@ class PullIndeedJob < ApplicationJob
                     # Get Open Position
                     job_title = getIndeedJobTitle(company)
                     # Get Location
-                    location = getLocation(company)
+                    city = getCity(company)
+                    # Get State
+                    state = getState(company)
+                    # Get Zipcode
+                    zipcode = getZipcode(company)
                     # Get Summary
                     summary = getSummary(company)
                     # Get Summary link
@@ -78,14 +82,16 @@ class PullIndeedJob < ApplicationJob
 
                     puts company_name
                     puts job_title
-                    puts location
+                    puts city
+                    puts state
+                    puts zipcode
                     puts summary
                     puts company_domain
                     puts indeed_company_link
                     #puts summary
 
                     bridges.push(
-                      [company_name,job_title, location, summary, company_domain, indeed_company_link]
+                      [company_name,job_title, city, state, zipcode, summary, company_domain, indeed_company_link]
                       )
 
                 rescue
@@ -96,12 +102,10 @@ class PullIndeedJob < ApplicationJob
             end
 
             puts "---------------- THIS IS ANOTHER PAGE ----------------------"
-
-            sleep 2
         end
 
         worksheet_name = "Job Postings"
-        headers = ["Company","Job Title", "City/State", "Open Position Summary", "Company Domain", "Indeed Company Page"]
+        headers = ["Company","Job Title", "City", "State", "Zip Code", "Open Position Summary", "Company Domain", "Indeed Company Page"]
             
         book = populateOneSpreadsheet(worksheet_name,headers,bridges)
 
@@ -151,9 +155,18 @@ class PullIndeedJob < ApplicationJob
                 company_name = text[2].split("<")[0]
             end
 
-            company_name.sub! '&amp;', 'and'
+            c1_name = company_name.gsub '&amp;', 'and'
+            c2_name = c1_name.gsub "\n", ""
 
-            return company_name.to_s
+            words = c2_name.scan(/\S+/)
+
+            comp_name = ""
+            
+            for word in words
+                comp_name = comp_name + " " + word
+            end
+            comp_name.slice!(0)
+            return comp_name
         rescue
 
             return "NOT FOUND"
@@ -209,10 +222,10 @@ class PullIndeedJob < ApplicationJob
           count_text = company.css('.jobtitle').to_s
           position = count_text.split('title=')[1].split('"')[1].to_s
 
-          position.sub! '&amp;', 'and'
+          pos = position.gsub '&amp;', 'and'
 
 
-          return position
+          return pos
       rescue
 
           return "NOT FOUND"
@@ -223,13 +236,45 @@ class PullIndeedJob < ApplicationJob
     end
 
 
-    def getLocation(company)
+    def getCity(company)
 
         begin
             count_text = company.css('.location').to_s
-            location = count_text.split('>')[1].split('<')[0].to_s
+            loc = count_text.split('>')[1].split('<')[0].to_s
 
-            location.sub! '&amp;', 'and'
+            location = loc.split(',')[0].to_s
+
+            final_location = location.gsub '&amp;', 'and'
+
+            return final_location
+        rescue
+
+            return "NOT FOUND"
+
+        end
+    end
+
+    def getState(company)
+
+        begin
+            count_text = company.css('.location').to_s
+            loc = count_text.split('>')[1].split('<')[0].to_s
+            location = loc.split(',')[1].split(' ')[0].to_s
+
+            return location
+        rescue
+
+            return "NOT FOUND"
+
+        end
+    end
+
+    def getZipcode(company)
+
+        begin
+            count_text = company.css('.location').to_s
+            loc = count_text.split('>')[1].split('<')[0].to_s
+            location = loc.split(',')[1].split(' ')[1].to_s
 
             return location
         rescue
@@ -246,7 +291,18 @@ class PullIndeedJob < ApplicationJob
           count_text = company.css('.summary').to_s
 
           full_sanitizer = Rails::Html::FullSanitizer.new
-          text = full_sanitizer.sanitize(count_text)
+          tex = full_sanitizer.sanitize(count_text)
+          text = tex.gsub "\n", ""
+
+          check = true
+          while check
+              if text[0] == " "
+                    text.slice!(0)
+              else
+                    check = false
+              end
+          end
+
           return text
       rescue
 
