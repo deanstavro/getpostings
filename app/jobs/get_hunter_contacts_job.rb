@@ -30,15 +30,39 @@ class GetHunterContactsJob < ApplicationJob
             hunter_apis = getHunterContacts(query, domain_hash)
             puts hunter_apis
 
+            csv_rows_hash = {}
+
             for hunter in hunter_apis
             
                 response = RestClient::Request.execute(
                 method: :get, url: hunter
                 )
                 puts "HERE IS THE RESPONSE"
-                puts response.code
-                puts response.body
+                
+                if response.code != 200
+                  query.update_attribute(:download_file, "Contact ScaleRep - could not pull data")
+                  return
+                end
+
+                # Add Data into hash
+                json_response = JSON.parse(response.body.to_s)
+
+                domain =  json_response["data"]["domain"]
+                organization = json_response["data"]["organization"]
+
+                email_hash = json_response["data"]["emails"]
+
+                for email in email_hash
+                  puts email.to_s
+                end
+
             end
+
+            # Create Spreadsheet and add headers and hash
+
+            # Upload file to AWS
+
+            # Update download_file so that the url is reflected
         end
     end
 

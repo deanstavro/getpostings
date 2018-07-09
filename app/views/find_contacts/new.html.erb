@@ -17,12 +17,12 @@
 
 	  	<div class="form-group">
 	      	<%= f.label :seniority, "Choose seniority. The possible values are: junior, senior or executive. Several levels can be selected (comma-delimited)."%>
-	      	<%= f.text_field :seniority, :autofocus => true, required: true, class: 'form-control' %>
+	      	<%= f.text_field :seniority, :autofocus => true, class: 'form-control' %>
 	    </div>
 
 	   	<div class="form-group">
 	      	<%= f.label :department, "Choose department(s). The possible values are: executive, it, finance, management, sales, legal, support, hr, marketing or communication. Several departments can be selected (comma-delimited)." %>
-	      	<%= f.text_field :department, :autofocus => true, required: true, class: 'form-control' %>
+	      	<%= f.text_field :department, :autofocus => true, class: 'form-control' %>
 	    </div>
 
 	    <%= f.submit 'Download Contacts', :class => 'button' %>
