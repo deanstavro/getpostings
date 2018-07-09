@@ -30,7 +30,7 @@ class GetHunterContactsJob < ApplicationJob
             hunter_apis = getHunterContacts(query, domain_hash)
             puts hunter_apis
 
-            csv_rows_hash = {}
+            bridges = []
 
             for hunter in hunter_apis
             
@@ -52,17 +52,125 @@ class GetHunterContactsJob < ApplicationJob
 
                 email_hash = json_response["data"]["emails"]
 
-                for email in email_hash
-                  puts email.to_s
+
+                #{"value"=>"hernandez.l@mcs4kids.com", "type"=>"personal", "confidence"=>94, 
+                #"sources"=>[{"domain"=>"marktwain.mcs4kids.com", "uri"=>"http://marktwain.mcs4kids.com/staff/office-staff", "extracted_on"=>"2015-11-20", "last_seen_on"=>"2018-06-07", "still_on_page"=>true}],
+                #{}"first_name"=>"Lupe", "last_name"=>"Hernandez", "position"=>"Administrative", "seniority"=>nil,
+                #{}"department"=>"Management", "linkedin"=>nil, "twitter"=>nil, "phone_number"=>nil}
+
+                for email_data in email_hash
+
+                    begin
+                        email_type = email_data["type"]
+                    rescue 
+                        email_type = ""
+                    end
+
+
+                    begin
+                        email = email_data["value"]
+                    rescue 
+                        email = ""
+                    end
+
+
+                    begin
+                        email_confidence = email_data["confidence"]
+                    rescue 
+                        email_confidence = ""
+                    end
+
+
+                    begin
+                        first_name = email_data["first_name"]
+                    rescue 
+                        first_name = ""
+                    end
+
+
+                    begin
+                        last_name = email_data["last_name"]
+                    rescue 
+                        last_name = ""
+                    end
+
+
+                    begin
+                        position = email_data["position"]
+                    rescue 
+                        position = ""
+                    end
+
+
+                    begin
+                        seniority = email_data["seniority"]
+                    rescue 
+                        seniority = ""
+                    end
+
+
+                    begin
+                        department = email_data["department"]
+                    rescue 
+                        department = ""
+                    end
+
+
+                    begin
+                        linkedin= email_data["linkedin"]
+                    rescue 
+                        linkedin = ""
+                    end
+
+
+                    begin
+                        twitter = email_data["twitter"]
+                    rescue 
+                        twitter = ""
+                    end
+
+
+                    begin
+                        phone_number = email_data["phone_number"]
+                    rescue 
+                        phone_number = ""
+                    end
+
+                    bridges.push(
+                      [email, email_type, email_confidence, first_name,last_name, position, seniority, department, linkedin, twitter, phone_number]
+                      )
+                    
                 end
 
             end
 
-            # Create Spreadsheet and add headers and hash
 
-            # Upload file to AWS
+            worksheet_name = "Contacts"
+            headers = ["email", "email type", "email confidence", "first name", "last name", "position", "seniority", "department", "linkedin", "twitter", "phone number"]
+                
+            book = populateOneSpreadsheet(worksheet_name,headers,bridges)
 
-            # Update download_file so that the url is reflected
+            directory_name = "tmp/csv"
+            file_name = "find_contact.xls"
+
+            path_to_file= File.join(Rails.root, directory_name, file_name)
+            writeSpreadsheetToFile(directory_name, book, path_to_file)
+
+
+            file_name_aws = "contact_download/contacts" + query.id.to_s + ".csv"
+            puts "FILE NAME: " + file_name_aws
+
+            begin
+                bucket_name = "getpostings"
+
+                object_url = uploadToAws(bucket_name, file_name_aws, path_to_file.to_s)
+                query.update_attribute(:download_file, object_url)
+            rescue
+                puts "COULD NOT UPLOAD INTO AWS"
+            end
+            # Delete the file after is has been uploaded
+            File.delete(path_to_file) if File.exist?(path_to_file)
+
         end
     end
 
