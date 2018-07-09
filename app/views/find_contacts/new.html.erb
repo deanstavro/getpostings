@@ -1,16 +1,42 @@
 <center>
-  <p class="container text-danger"><%= flash[:error] %></p>
-  <p class="container text-success"><%= flash[:notice] %></p>
+  	<p class="container text-danger"><%= flash[:error] %></p>
+  	<p class="container text-success"><%= flash[:notice] %></p>
 </center>
 
 <div class="authform">
-  <h3>Download Contacts</h3>
-  <p> Upload a CSV with a 'company_domain' field, and we'll pull all the associated e-mails for that company</p>
-  <%= form_tag @query, :url => {:action => "create"}, html: { method: :post }, multipart: true do %>
+
+	<h3>Download Contacts</h3>
+	<p> Upload a CSV with a 'domain' field, and we'll pull all the associated e-mails for that company</p>
+
+
+	<%= form_for @query, :url => {:action => "create"}, html: { method: :post } do |f| %>
+
+		<div class="form-group">
+	      	<%= f.label :file, "Upload CSV file with 'domain' header" %><br>
+	      	<%= file_field_tag :file %><br><br>
+	    </div>
+
+	  	<div class="form-group">
+	      	<%= f.label :seniority, "Possible values: junior, senior or executive. Several seniority levels can be selected (delimited by a comma)."%>
+	      	<%= f.text_field :seniority, :autofocus => true, required: true, class: 'form-control' %>
+	    </div>
+
+	   	<div class="form-group">
+	      	<%= f.label :department, "Possible values: executive, it, finance, management, sales, legal, support, hr, marketing or communication. Several departments can be selected (comma-delimited)." %>
+	      	<%= f.text_field :department, :autofocus => true, required: true, class: 'form-control' %>
+	    </div>
+
+	    <%= f.submit 'Download Contacts', :class => 'button' %>
+
+	<% end %>
+</div>
+
+
+
+
+
+
+<%= form_tag @query, :url => {:action => "create"}, html: { method: :post }, multipart: true do %>
               <%= file_field_tag :file %><br><br>
               <%= submit_tag "Import CSV", :class => 'button' %>
-  <% end %>
-
-
-
-</div>
+<% end %>

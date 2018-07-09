@@ -21,42 +21,74 @@ class FindContactsController < ApplicationController
 
 	def create
 
-		puts "Starting importing for find contacts"
-		@user = User.find(current_user.id)
-    	@company = ClientCompany.find_by(id: @user.client_company_id)
-
+		  puts "Starting importing for find contacts"
+		  @user = User.find(current_user.id)
+      @company = ClientCompany.find_by(id: @user.client_company_id)
+      puts "Start Begin"
     	begin
         	if (params[:file].content_type).to_s == 'text/csv'
           		if (params[:file].size).to_i < 1000000
 
-          			csv_file_n = params[:file]
-          			csv_file = csv_file_n.path
-          			file_name = File.basename(csv_file).to_s
+                domain_hash = []
+                CSV.foreach(params[:file].path, headers: true) do |row|
+                    puts "looping through each row"
 
-          			headers = CSV.read(csv_file, headers: true).headers
+                    #Take row, convert keys to lowercase, put in key,value hash
+                    new_hash = {}
 
-          			puts headers.to_s
+                    row.to_hash.each_pair do |k,v|
 
-          			if headers.include?('company_domain') or headers.include? 'Company_domain'
+                        new_hash.merge!({k.downcase => v})
 
-                    directory_name = "tmp/csv"
-                    file_name = "contacts.xls"
-                    path_to_file= File.join(Rails.root, directory_name, file_name)
+                        if new_hash["domain"].present?
+                            domain_hash << new_hash["domain"]
+                        end
+                    end
 
-                    writeSpreadsheetToFile(directory_name, csv_file, path_to_file)
+                    
+                end
+
+                begin
+                    if domain_hash.count > 0 
+                        puts domain_hash
+                        GetHunterContactsJob.perform_later(domain_hash, @user, @company)
+
+                        redirect_to find_contacts_path, :flash => { :notice => "File Uploaded. Job has started!" }
+                        return
+                    else
+                        redirect_to new_find_contact_path, :flash => { :error => "Error! Could not find any domains in the 'domain' header!" }
+                        return
+                    end
+
+                rescue
+                    redirect_to new_find_contact_path, :flash => { :error => "Error! Could not Pull Contacts" }
+                    return
+                end
+
+
+
+
+
+          			#if headers.include?('company domain') or headers.include? 'Company_domain' or headers.include? 'domain'
+
+                #    directory_name = "tmp/csv"
+                #    file_name = "contacts.xls"
+                #    path_to_file= File.join(Rails.root, directory_name, file_name)
+
+                #    writeSpreadsheetToFile(directory_name, csv_file, path_to_file)
           				
-          				  GetHunterContactsJob.perform_later(csv_file, @user, @company)
+          			#	  GetHunterContactsJob.perform_later(csv_file, @user, @company)
 
-          				  redirect_to find_contacts_path, :flash => { :notice => "File Uploaded. Job has started!" }
-          				  return
+          			#	  redirect_to find_contacts_path, :flash => { :notice => "File Uploaded. Job has started!" }
+          			#	  return
 
           				
 
-          			else
-          				redirect_to new_find_contact_path, :flash => { :error => "Error! Could not find 'company_domain' header in the CSV file!" }
-          				return
+          			#else
+          			#	redirect_to new_find_contact_path, :flash => { :error => "Error! Could not find 'company_domain' header in the CSV file!" }
+          			#	return
 
-          			end
+          			# => end
 
 
           		else

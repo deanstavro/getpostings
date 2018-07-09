@@ -1,41 +1,35 @@
 class GetHunterContactsJob < ApplicationJob
     queue_as :default
   
-
     require 'open-uri'
-    require 'nokogiri'
     require 'json'
     require 'csv'
+    require 'rest-client'
 
-	
 
-
-    def perform(csv_file, user, company)
+    def perform(domain_hash, user, company)
     
         puts "Starting Hunter Job"
 
-        base_url = "https://www.indeed.com"
-        total_limit = 950
-        limit = 50
+        cleaned_domains = cleanDomains(domain_hash)
+        puts cleaned_domains
 
-        domain_array = []
-        CSV.foreach(csv_file, headers: true) do |row|
+        for domain in cleaned_domains
+            hunter_apis = getHunterContacts(domain_hash)
+            puts hunter_apis
 
-            #make row a dictionary
-            row_dict = row.to_hash
-
-            if row_dict["company_domain"].present?
-                domain_array << row_dict["company_domain"]
-            else
-                puts "IT IS NOT PRESENT"
+            for hunter in hunter_apis
+            
+                response = RestClient::Request.execute(
+                method: :get, url: hunter
+                )
+                puts "HERE IS THE RESPONSE"
+                puts response.code
+                puts response.body
             end
-          end
+        end
+    end
 
-        domains = domain_array.uniq
-        cleaned_domains = cleanDomains(domains)
-        getHunterContacts(cleaned_domains)
-
-	end
 
 
 
@@ -53,11 +47,13 @@ class GetHunterContactsJob < ApplicationJob
 
   def getHunterContacts(domains)
       base_url = "https://api.hunter.io/v2/domain-search?domain="
-
+      key = "&api_key=81ce4e6a2bb11717dc61df607bbb7a0c6f7c82ae"
+      hunter_domains = []
       for domain in domains
-          puts base_url+domain
-          #url = base_url+domain
+          hunter_domains << base_url+domain+key
       end
+
+      return hunter_domains
   end
 
 
