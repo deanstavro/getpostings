@@ -6,14 +6,14 @@
 <div class="authform">
 
 	<h3>Download Contacts</h3>
-	<p> Upload a CSV with a 'domain' field, and we'll pull all the associated e-mails for that company</p>
+	<p> Get a CSV of contacts by uploading a CSV with a 'domain' header, and domains within that column. We'll pull associated e-mails for that company</p>
 
 
 	<%= form_for @query, :url => {:action => "create"}, html: { method: :post } do |f| %>
 
 		<div class="form-group">
-	      	<%= f.label :file, "Upload CSV file with 'domain' header" %><br>
-	      	<%= file_field_tag :file %><br><br>
+	      	<%= f.label :csv_file, "Upload CSV file with 'domain' header" %><br>
+	      	<%= f.file_field :csv_file %><br><br>
 	    </div>
 
 	  	<div class="form-group">
@@ -35,8 +35,9 @@
 
 
 
-
-<%= form_tag @query, :url => {:action => "create"}, html: { method: :post }, multipart: true do %>
+<% if false %>
+		<%= form_tag @query, :url => {:action => "create"}, html: { method: :post }, multipart: true do %>
               <%= file_field_tag :file %><br><br>
               <%= submit_tag "Import CSV", :class => 'button' %>
+		<% end %>
 <% end %>

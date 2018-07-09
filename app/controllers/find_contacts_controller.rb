@@ -1,7 +1,7 @@
 class FindContactsController < ApplicationController
+  before_action :authenticate_user!
   include SpreadsheetHelp
   include Aws
-	before_action :authenticate_user!
 	require 'csv'
 
 
@@ -24,13 +24,15 @@ class FindContactsController < ApplicationController
 		  puts "Starting importing for find contacts"
 		  @user = User.find(current_user.id)
       @company = ClientCompany.find_by(id: @user.client_company_id)
-      puts "Start Begin"
+      
+
     	begin
-        	if (params[:file].content_type).to_s == 'text/csv'
-          		if (params[:file].size).to_i < 1000000
+        	if (params[:find_contact][:csv_file].content_type).to_s == 'text/csv'
+          		if (params[:find_contact][:csv_file].size).to_i < 1000000
+
 
                 domain_hash = []
-                CSV.foreach(params[:file].path, headers: true) do |row|
+                CSV.foreach(params[:find_contact][:csv_file].path, headers: true) do |row|
                     puts "looping through each row"
 
                     #Take row, convert keys to lowercase, put in key,value hash
@@ -51,10 +53,30 @@ class FindContactsController < ApplicationController
                 begin
                     if domain_hash.count > 0 
                         puts domain_hash
-                        GetHunterContactsJob.perform_later(domain_hash, @user, @company)
+                        #save uploaded file to aws
 
-                        redirect_to find_contacts_path, :flash => { :notice => "File Uploaded. Job has started!" }
-                        return
+                        bucket_name = "getpostings"
+
+                        object_url = uploadToAws(bucket_name, "find_contacts/find_contact.csv", params[:find_contact][:csv_file].path)
+
+                        params[:find_contact][:csv_file] = object_url.to_s
+
+                        #save object_url, department, and seniority
+                        @query = FindContact.new(query_params)
+                        @query.client_company = @company
+
+                        if  @query.save
+                          
+
+                            # Call hunter job
+                            GetHunterContactsJob.perform_later(domain_hash, @user, @company)
+
+                            redirect_to find_contacts_path, :flash => { :notice => "File Uploaded. Job has started!" }
+                            return
+                        else
+                            redirect_to new_find_contact_path, :flash => { :error => "Error! Could not save the current query!" }
+                            return
+                        end
                     else
                         redirect_to new_find_contact_path, :flash => { :error => "Error! Could not find any domains in the 'domain' header!" }
                         return
@@ -123,7 +145,7 @@ class FindContactsController < ApplicationController
 
 
 	def query_params
-      params.require(:find_contact).permit(:source, :url, :keywords, :location)
+      params.require(:find_contact).permit(:seniority, :department, :csv_file)
 	end
 
 	def checkHasDomain(csv_file)

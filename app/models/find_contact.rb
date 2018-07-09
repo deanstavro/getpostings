@@ -1,4 +1,6 @@
 class FindContact < ApplicationRecord
+	belongs_to :client_company
+
 
 
 
