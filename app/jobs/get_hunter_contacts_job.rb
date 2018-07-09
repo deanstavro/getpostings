@@ -1,5 +1,7 @@
 class GetHunterContactsJob < ApplicationJob
     queue_as :default
+    include SpreadsheetHelp
+    include Aws
   
     require 'open-uri'
     require 'json'
@@ -7,15 +9,25 @@ class GetHunterContactsJob < ApplicationJob
     require 'rest-client'
 
 
-    def perform(domain_hash, user, company)
-    
+    def perform(file, query, domain_hash, user, company)
         puts "Starting Hunter Job"
+
+
+        #### SAVE FILE TO AWS ######
+        bucket_name = "getpostings"
+        file_name = "find_contacts/contacts_" + query.id.to_s + ".csv"
+
+        object_url = uploadToAws(bucket_name, file_name, file)
+
+        #### UPDATE QUERY WITH AWS LINK ####
+        query.update_attribute(:csv_file, object_url.to_s) 
+        puts "uploaded file saved, query updated with file link"
 
         cleaned_domains = cleanDomains(domain_hash)
         puts cleaned_domains
 
         for domain in cleaned_domains
-            hunter_apis = getHunterContacts(domain_hash)
+            hunter_apis = getHunterContacts(query, domain_hash)
             puts hunter_apis
 
             for hunter in hunter_apis
@@ -45,7 +57,7 @@ class GetHunterContactsJob < ApplicationJob
   end
 
 
-  def getHunterContacts(domains)
+  def getHunterContacts(query, domains)
       base_url = "https://api.hunter.io/v2/domain-search?domain="
       key = "&api_key=81ce4e6a2bb11717dc61df607bbb7a0c6f7c82ae"
       hunter_domains = []

@@ -6,7 +6,6 @@
 <div class="authform">
 
 	<h3>Download Contacts</h3>
-	<p> Get a CSV of contacts by uploading a CSV with a 'domain' header, and domains within that column. We'll pull associated e-mails for that company</p>
 
 
 	<%= form_for @query, :url => {:action => "create"}, html: { method: :post } do |f| %>
@@ -17,7 +16,7 @@
 	    </div>
 
 	  	<div class="form-group">
-	      	<%= f.label :seniority, "Possible values: junior, senior or executive. Several seniority levels can be selected (delimited by a comma)."%>
+	      	<%= f.label :seniority, "Possible values: junior, senior or executive. Several levels can be selected (comma-delimited)."%>
 	      	<%= f.text_field :seniority, :autofocus => true, required: true, class: 'form-control' %>
 	    </div>
 
@@ -30,14 +29,3 @@
 
 	<% end %>
 </div>
-
-
-
-
-
-<% if false %>
-		<%= form_tag @query, :url => {:action => "create"}, html: { method: :post }, multipart: true do %>
-              <%= file_field_tag :file %><br><br>
-              <%= submit_tag "Import CSV", :class => 'button' %>
-		<% end %>
-<% end %>

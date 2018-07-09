@@ -18,18 +18,18 @@
       <tr class="text-center">
         <th scope="col">Date Created</th>
 
-        <th scope="col">CSV File</th>
+        <th scope="col">Uploded File (.txt)</th>
     </thead>
     
     <tbody class="text-center">
       <% @queries.each do |query| %>
         <tr>
-          <td><%=query.created_at %></td>
-          <% if query.download_file.present? %>
-            <td><%= link_to 'download csv', query.file_download %> 
+          <td><%= query.created_at %></td>
+          <% if query.csv_file.present? %>
+            <td><%= link_to 'uploaded csv', query.csv_file %> 
               <%=  %></a></td>
           <% else %>
-            <td>downloading ...</td>
+            <td>uploading ...</td>
           <% end %>
         </tr>
       <% end %>
