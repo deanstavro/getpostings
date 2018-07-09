@@ -11,17 +11,17 @@
 	<%= form_for @query, :url => {:action => "create"}, html: { method: :post } do |f| %>
 
 		<div class="form-group">
-	      	<%= f.label :csv_file, "Upload CSV file with 'domain' header" %><br>
-	      	<%= f.file_field :csv_file %><br><br>
+	      	<%= f.label :csv_file, "Upload CSV file with 'domain' header, and company domains in that column." %><br>
+	      	<%= f.file_field :csv_file, :autofocus => true, required: true, class: 'form-control' %>
 	    </div>
 
 	  	<div class="form-group">
-	      	<%= f.label :seniority, "Possible values: junior, senior or executive. Several levels can be selected (comma-delimited)."%>
+	      	<%= f.label :seniority, "Choose seniority. The possible values are: junior, senior or executive. Several levels can be selected (comma-delimited)."%>
 	      	<%= f.text_field :seniority, :autofocus => true, required: true, class: 'form-control' %>
 	    </div>
 
 	   	<div class="form-group">
-	      	<%= f.label :department, "Possible values: executive, it, finance, management, sales, legal, support, hr, marketing or communication. Several departments can be selected (comma-delimited)." %>
+	      	<%= f.label :department, "Choose department(s). The possible values are: executive, it, finance, management, sales, legal, support, hr, marketing or communication. Several departments can be selected (comma-delimited)." %>
 	      	<%= f.text_field :department, :autofocus => true, required: true, class: 'form-control' %>
 	    </div>
 

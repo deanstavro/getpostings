@@ -47,12 +47,14 @@ class FindContactsController < ApplicationController
 
                   begin
                       if domain_hash.count > 0 
+
                           puts domain_hash
                           #save object_url, department, and seniority
+                          params[:find_contact].delete :csv_file
                           @query = FindContact.new(query_params)
                           @query.client_company = @company
 
-                          if  @query.save
+                          if @query.save
 
                               # Call hunter job
                               GetHunterContactsJob.perform_later(file_path, @query, domain_hash, @user, @company)
@@ -95,7 +97,7 @@ class FindContactsController < ApplicationController
 
 
 	def query_params
-      params.require(:find_contact).permit(:csv_file, :seniority, :department)
+      params.require(:find_contact).permit(:seniority, :department)
 	end
 
 	def checkHasDomain(csv_file)

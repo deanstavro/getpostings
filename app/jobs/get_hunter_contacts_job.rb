@@ -60,10 +60,28 @@ class GetHunterContactsJob < ApplicationJob
   def getHunterContacts(query, domains)
       base_url = "https://api.hunter.io/v2/domain-search?domain="
       key = "&api_key=81ce4e6a2bb11717dc61df607bbb7a0c6f7c82ae"
+
+      if query.seniority.present?
+          seniority = "&seniority="+query.seniority
+      else
+          seniority = ""
+      end
+
+      puts "SENIORITY: " + seniority
+
+      if query.department.present?
+          department = "&department="+query.department
+      else
+          department = ""
+      end
+
+      puts "DEPARTMENT: " + department 
+
       hunter_domains = []
       for domain in domains
-          hunter_domains << base_url+domain+key
+          hunter_domains << base_url+domain+seniority+department+key
       end
+      puts hunter_domains
 
       return hunter_domains
   end

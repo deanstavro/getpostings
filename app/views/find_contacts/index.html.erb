@@ -19,17 +19,27 @@
         <th scope="col">Date Created</th>
 
         <th scope="col">Uploded File (.txt)</th>
+
+        <th scope="col">Download Contacts (.csv)</th>
     </thead>
     
     <tbody class="text-center">
       <% @queries.each do |query| %>
         <tr>
           <td><%= query.created_at %></td>
+
           <% if query.csv_file.present? %>
-            <td><%= link_to 'uploaded csv', query.csv_file %> 
+            <td><%= link_to 'uploaded file', query.csv_file %> 
               <%=  %></a></td>
           <% else %>
             <td>uploading ...</td>
+          <% end %>
+
+          <% if query.download_file.present? %>
+            <td><%= link_to 'dowload csv file', query.download_file %> 
+              <%=  %></a></td>
+          <% else %>
+            <td>downloading ...</td>
           <% end %>
         </tr>
       <% end %>
