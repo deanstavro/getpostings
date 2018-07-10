@@ -48,8 +48,20 @@ class GetHunterContactsJob < ApplicationJob
                 json_response = JSON.parse(response.body.to_s)
                 puts json_response.to_s
 
-                domain =  json_response["data"]["domain"]
-                organization = json_response["data"]["organization"]
+                begin
+                    domain = json_response["data"]["domain"]
+                rescue 
+                    domain = ""
+                end
+
+                begin
+                    organization = json_response["data"]["organization"]
+                rescue 
+                    organization = ""
+                end
+
+                
+                
 
                 email_hash = json_response["data"]["emails"]
 
@@ -138,7 +150,7 @@ class GetHunterContactsJob < ApplicationJob
                     end
 
                     bridges.push(
-                      [email, email_type, email_confidence, first_name,last_name, position, seniority, department, linkedin, twitter, phone_number]
+                      [email, email_type, email_confidence, domain, organization, first_name,last_name, position, seniority, department, linkedin, twitter, phone_number]
                       )
                     
                 end
@@ -147,7 +159,7 @@ class GetHunterContactsJob < ApplicationJob
 
 
             worksheet_name = "Contacts"
-            headers = ["email", "email type", "email confidence", "first name", "last name", "position", "seniority", "department", "linkedin", "twitter", "phone number"]
+            headers = ["email", "email type", "email confidence", "domain", "organization", "first name", "last name", "position", "seniority", "department", "linkedin", "twitter", "phone number"]
                 
             book = populateOneSpreadsheet(worksheet_name,headers,bridges)
 
