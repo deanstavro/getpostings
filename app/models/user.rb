@@ -5,17 +5,24 @@ class User < ApplicationRecord
   after_initialize :set_default_role, :if => :new_record?
   after_create :generate_key
 
+  has_many :accounts
+  has_many :leads
+  has_many :find_companies
+  has_many :find_contacts
+
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable
 
 
-  validates :first_name, presence: true
-  validates :last_name, presence: true
   validates :email, presence: true
-  validates :client_company, presence: true
+  validates_uniqueness_of :email
 
+
+
+
+ 
   def set_default_role
     self.role ||= :user
   end

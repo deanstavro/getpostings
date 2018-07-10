@@ -12,7 +12,7 @@ class PullIndeedJob < ApplicationJob
 
 
 
-    def perform(query, user, company)
+    def perform(query, user)
       
         puts "Starting Pull Indeed Job"
 

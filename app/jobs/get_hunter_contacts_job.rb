@@ -9,7 +9,7 @@ class GetHunterContactsJob < ApplicationJob
     require 'rest-client'
 
 
-    def perform(file, query, domain_hash, user, company)
+    def perform(file, query, domain_hash, user)
         puts "Starting Hunter Job"
 
 
@@ -46,6 +46,7 @@ class GetHunterContactsJob < ApplicationJob
 
                 # Add Data into hash
                 json_response = JSON.parse(response.body.to_s)
+                puts json_response.to_s
 
                 domain =  json_response["data"]["domain"]
                 organization = json_response["data"]["organization"]

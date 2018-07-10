@@ -1,6 +1,5 @@
 class Addfieldstocampaign < ActiveRecord::Migration[5.0]
   def change
-  	add_column :client_companies, :account_manager, :string
   	add_column :leads, :company_description, :string
   	add_column :leads, :number_of_employees, :string
 

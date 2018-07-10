@@ -37,8 +37,8 @@ ActiveRecord::Schema.define(version: 20180709022742) do
     t.datetime "created_at",                           null: false
     t.datetime "updated_at",                           null: false
     t.integer  "status"
-    t.integer  "client_company_id"
-    t.index ["client_company_id"], name: "index_accounts_on_client_company_id", using: :btree
+    t.integer  "user_id"
+    t.index ["user_id"], name: "index_accounts_on_user_id", using: :btree
   end
 
   create_table "active_admin_comments", force: :cascade do |t|
@@ -72,25 +72,6 @@ ActiveRecord::Schema.define(version: 20180709022742) do
     t.index ["reset_password_token"], name: "index_admin_users_on_reset_password_token", unique: true, using: :btree
   end
 
-  create_table "client_companies", force: :cascade do |t|
-    t.string   "name"
-    t.text     "description"
-    t.text     "company_notes"
-    t.string   "company_domain"
-    t.datetime "created_at",                      null: false
-    t.datetime "updated_at",                      null: false
-    t.text     "airtable_keys"
-    t.text     "replyio_keys"
-    t.string   "api_key"
-    t.integer  "number_of_seats"
-    t.text     "emails_to_use"
-    t.text     "products"
-    t.text     "notable_clients"
-    t.boolean  "profile_setup",   default: false
-    t.boolean  "account_live",    default: false
-    t.string   "account_manager"
-  end
-
   create_table "demos", force: :cascade do |t|
     t.string   "name"
     t.string   "email"
@@ -104,24 +85,24 @@ ActiveRecord::Schema.define(version: 20180709022742) do
     t.integer  "source"
     t.string   "url"
     t.string   "file_download"
-    t.datetime "created_at",        null: false
-    t.datetime "updated_at",        null: false
-    t.integer  "client_company_id"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
+    t.integer  "user_id"
     t.string   "keywords"
     t.string   "location"
     t.string   "status"
-    t.index ["client_company_id"], name: "index_find_companies_on_client_company_id", using: :btree
+    t.index ["user_id"], name: "index_find_companies_on_user_id", using: :btree
   end
 
   create_table "find_contacts", force: :cascade do |t|
     t.string   "csv_file"
     t.string   "download_file"
-    t.datetime "created_at",        null: false
-    t.datetime "updated_at",        null: false
-    t.integer  "client_company_id"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
+    t.integer  "user_id"
     t.string   "seniority"
     t.string   "department"
-    t.index ["client_company_id"], name: "index_find_contacts_on_client_company_id", using: :btree
+    t.index ["user_id"], name: "index_find_contacts_on_user_id", using: :btree
   end
 
   create_table "leads", force: :cascade do |t|
@@ -131,7 +112,7 @@ ActiveRecord::Schema.define(version: 20180709022742) do
     t.datetime "date_sourced"
     t.datetime "created_at",                            null: false
     t.datetime "updated_at",                            null: false
-    t.integer  "client_company_id"
+    t.integer  "user_id"
     t.string   "contract_sent"
     t.integer  "contract_amount"
     t.string   "timeline"
@@ -159,7 +140,7 @@ ActiveRecord::Schema.define(version: 20180709022742) do
     t.string   "company_website"
     t.integer  "account_id"
     t.index ["account_id"], name: "index_leads_on_account_id", using: :btree
-    t.index ["client_company_id"], name: "index_leads_on_client_company_id", using: :btree
+    t.index ["user_id"], name: "index_leads_on_user_id", using: :btree
   end
 
   create_table "users", force: :cascade do |t|
@@ -176,19 +157,16 @@ ActiveRecord::Schema.define(version: 20180709022742) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "role"
-    t.integer  "client_company_id"
     t.string   "first_name"
     t.string   "last_name"
     t.string   "api_key"
-    t.index ["client_company_id"], name: "index_users_on_client_company_id", using: :btree
     t.index ["email"], name: "index_users_on_email", unique: true, using: :btree
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
   end
 
-  add_foreign_key "accounts", "client_companies"
-  add_foreign_key "find_companies", "client_companies"
-  add_foreign_key "find_contacts", "client_companies"
+  add_foreign_key "accounts", "users"
+  add_foreign_key "find_companies", "users"
+  add_foreign_key "find_contacts", "users"
   add_foreign_key "leads", "accounts"
-  add_foreign_key "leads", "client_companies"
-  add_foreign_key "users", "client_companies"
+  add_foreign_key "leads", "users"
 end

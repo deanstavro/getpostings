@@ -7,9 +7,8 @@ class FindContactsController < ApplicationController
 
 	def index
 		  @user = User.find(current_user.id)
-  		@company = ClientCompany.find_by(id: @user.client_company_id)
     	# grab reports and grab leads for every week for a report
-    	@queries = FindContact.where(client_company_id: @company.id).order('updated_at DESC').paginate(:page => params[:page], :per_page => 20)
+    	@queries = FindContact.where(user_id: @user.id).order('updated_at DESC').paginate(:page => params[:page], :per_page => 20)
 	end
 
 
@@ -21,7 +20,6 @@ class FindContactsController < ApplicationController
 
 	def create
 		  @user = User.find(current_user.id)
-      @company = ClientCompany.find_by(id: @user.client_company_id)
 
     	begin
         	if (params[:find_contact][:csv_file].content_type).to_s == 'text/csv'
@@ -52,12 +50,12 @@ class FindContactsController < ApplicationController
                           #save object_url, department, and seniority
                           params[:find_contact].delete :csv_file
                           @query = FindContact.new(query_params)
-                          @query.client_company = @company
+                          @query.user = @user
 
                           if @query.save
 
                               # Call hunter job
-                              GetHunterContactsJob.perform_later(file_path, @query, domain_hash, @user, @company)
+                              GetHunterContactsJob.perform_later(file_path, @query, domain_hash, @user)
 
                               redirect_to find_contacts_path, :flash => { :notice => "File Uploaded. Job has started!" }
                               return

@@ -7,6 +7,6 @@ class CreateFindContacts < ActiveRecord::Migration[5.0]
       t.timestamps
     end
 
-    add_reference :find_contacts, :client_company, foreign_key: true
+    add_reference :find_contacts, :user, foreign_key: true
   end
 end

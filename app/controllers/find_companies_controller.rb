@@ -4,9 +4,8 @@ class FindCompaniesController < ApplicationController
 
 	def index
 		@user = User.find(current_user.id)
-  		@company = ClientCompany.find_by(id: @user.client_company_id)
     	# grab reports and grab leads for every week for a report
-    	@queries = FindCompany.where(client_company_id: @company.id).order('updated_at DESC').paginate(:page => params[:page], :per_page => 20)
+    	@queries = FindCompany.where(user_id: @user.id).order('updated_at DESC').paginate(:page => params[:page], :per_page => 20)
 	end
 
 
@@ -17,21 +16,20 @@ class FindCompaniesController < ApplicationController
 
 	def create
 		@user = User.find(current_user.id)
-    	@company = ClientCompany.find_by(id: @user.client_company_id)
 
     	@query = FindCompany.new(query_params)
-    	@query.client_company = @company
+    	@query.user = @user
 
     	if  @query.save
 
     		if @query.source == "search by job postings"
 	    		indeed_link = getIndeedLink(@query)
 	    		@query.update_attribute(:url, indeed_link)
-	    		aws_link = PullIndeedJob.perform_later(@query, @user, @company)
+	    		aws_link = PullIndeedJob.perform_later(@query, @user)
 	    	else
 	    		yellow_pages_link = getYellowPagesLink(@query)
 	    		@query.update_attribute(:url, yellow_pages_link)
-	    		aws_link = PullYellowPagesJob.perform_later(@query, @user, @company)
+	    		aws_link = PullYellowPagesJob.perform_later(@query, @user)
 	    	end
     		
 			redirect_to find_companies_path, :notice => "Your job is executing!"

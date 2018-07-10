@@ -12,7 +12,6 @@ class UsersController < ApplicationController
     if user_signed_in?
 
       @user = find_user
-      @client_company = find_company
     
     else
       render 'homepage#index'

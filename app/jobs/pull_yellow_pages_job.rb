@@ -15,7 +15,7 @@ class PullYellowPagesJob < ApplicationJob
   
 
 
-    def perform(query, user, company)
+    def perform(query, user)
 
         puts "Starting Yellow Pages Job"
         limit = 30 #30 rows per page
