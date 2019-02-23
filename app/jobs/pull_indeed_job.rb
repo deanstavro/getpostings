@@ -13,7 +13,7 @@ class PullIndeedJob < ApplicationJob
 
 
     def perform(query, user)
-      
+
         puts "Starting Pull Indeed Job"
 
         base_url = "https://www.indeed.com"
@@ -33,7 +33,7 @@ class PullIndeedJob < ApplicationJob
         bridges = []
         # Loop through all pages, with the limit being 50, and the start being n
         (0..count).step(limit) do |n|
-            
+
             url = getUrl(query.url, limit, n)
             puts "URL: " + url.to_s
 
@@ -43,7 +43,7 @@ class PullIndeedJob < ApplicationJob
 
             #Loop through every record on the page to grab contents
             company_info_list.each do |company|
-
+                puts "going through a company"
                 begin
 
                     #Get Company Name
@@ -59,7 +59,7 @@ class PullIndeedJob < ApplicationJob
                     # Get Summary
                     summary = getSummary(company)
                     # Get Summary link
-                    
+
                     begin
                         indeed_company_link = getIndeedCompanyLink(base_url,company)
                     rescue
@@ -68,7 +68,7 @@ class PullIndeedJob < ApplicationJob
 
 
                     if indeed_company_link != ""
-                        # Get company about detail page if available 
+                        # Get company about detail page if available
                         job_opening_page_scrape = parseHtml(indeed_company_link)
 
                         if job_opening_page_scrape != nil
@@ -106,7 +106,7 @@ class PullIndeedJob < ApplicationJob
 
         worksheet_name = "Job Postings"
         headers = ["Company","Job Title", "City", "State", "Zip Code", "Open Position Summary", "Company Domain", "Indeed Company Page"]
-            
+
         book = populateOneSpreadsheet(worksheet_name,headers,bridges)
 
         directory_name = "tmp/csv"
@@ -137,7 +137,8 @@ class PullIndeedJob < ApplicationJob
 
     def getIndeedCompany(html_content)
 
-        company_docs = html_content.xpath("//div[@class='  row  result']")
+        company_docs = html_content.xpath("//div[contains(@class,'row') and contains(@class,'result')]")
+        puts "grabbed all listings on indeed."
         return company_docs
     end
 
@@ -146,7 +147,7 @@ class PullIndeedJob < ApplicationJob
 
         begin
             count_text = company.css('.company').to_s
-            
+
             text = count_text.split(">")
 
             if text[2]== nil
@@ -161,7 +162,7 @@ class PullIndeedJob < ApplicationJob
             words = c2_name.scan(/\S+/)
 
             comp_name = ""
-            
+
             for word in words
                 comp_name = comp_name + " " + word
             end
@@ -314,7 +315,7 @@ class PullIndeedJob < ApplicationJob
 
     def getIndeedCompanyLink(base_url, company)
         count_text = company.css('.company').to_s
-      
+
         if count_text.include? "href"
             indeed_company_link = count_text.split('href="')[1].split('"')[0]
             cmpy_about_page = base_url + indeed_company_link+"/about"
@@ -343,8 +344,8 @@ class PullIndeedJob < ApplicationJob
 
               rescue
                   return ""
-              end 
-            
+              end
+
         rescue
             return ""
         end
