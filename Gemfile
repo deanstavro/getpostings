@@ -11,7 +11,7 @@ gem 'turbolinks', '~> 5'
 gem 'jbuilder', '~> 2.5'
 gem "activeadmin", git: "https://github.com/gregbell/active_admin"
 gem 'frontend-generators'
-gem 'bootstrap', '~> 4.1.0'
+gem 'bootstrap', '~> 4.1.3'
 gem 'autoprefixer-rails'
 gem 'devise'
 gem 'high_voltage'
