@@ -219,7 +219,7 @@ GEM
       activerecord (>= 3.0)
     popper_js (1.12.9)
     public_suffix (3.0.2)
-    puma (3.11.4)
+    puma (3.12.6)
     rack (2.0.5)
     rack-protection (2.0.3)
       rack
@@ -401,7 +401,7 @@ DEPENDENCIES
   nokogiri (= 1.8.2)
   paperclip
   pg
-  puma (~> 3.0)
+  puma (~> 3.12)
   rails (~> 5.0.0, >= 5.0.0.1)
   rails-erd
   rails-html-sanitizer
