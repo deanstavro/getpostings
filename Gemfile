@@ -53,7 +53,7 @@ end
 group :development do
   gem 'sqlite3'
   gem 'web-console'
-  gem 'listen', '~> 3.0.5'
+  gem 'listen', '~> 3.3.3'
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
   gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
